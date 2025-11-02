@@ -613,7 +613,7 @@ export default function UnifiedPermissionModal({
       )}
 
       {/* Change Summary */}
-      {changeCount > 0 && (
+      {!isRoleForm && changeCount > 0 && (
         <div className="p-2 md:p-3 rounded-lg bg-blue-50 border border-blue-200">
           <p className="text-xs md:text-sm font-medium text-blue-900">
             {changeCount} permission{changeCount === 1 ? '' : 's'} will be changed
@@ -626,7 +626,7 @@ export default function UnifiedPermissionModal({
         'flex gap-2 pt-2',
         isMobile ? 'flex-col-reverse' : 'items-center justify-between'
       )}>
-        {!isMobile && (
+        {!isMobile && !isRoleForm && (
           <div className="flex gap-2">
             <Button
               variant="ghost"
@@ -664,14 +664,23 @@ export default function UnifiedPermissionModal({
           <Button
             variant="default"
             onClick={handleSave}
-            disabled={!validation.isValid || changeCount === 0 || isSaving}
+            disabled={isSaving || (isRoleForm ? false : (!validation.isValid || changeCount === 0))}
             className={cn(
               'gap-2',
               isMobile ? 'flex-1' : ''
             )}
           >
-            <Save className="h-4 w-4" />
-            {isMobile ? 'Save' : isSaving ? 'Saving...' : 'Save Changes'}
+            {isSaving ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {isMobile ? 'Saving...' : `${mode === 'role-create' ? 'Creating...' : 'Updating...'}`}
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4" />
+                {isMobile ? 'Save' : isRoleForm ? (mode === 'role-create' ? 'Create Role' : 'Update Role') : 'Save Changes'}
+              </>
+            )}
           </Button>
         </div>
       </div>
