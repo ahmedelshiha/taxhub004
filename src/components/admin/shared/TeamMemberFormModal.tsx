@@ -55,95 +55,58 @@ export const TeamMemberFormModal = React.forwardRef<HTMLDivElement, TeamMemberFo
     title,
     description,
   }, ref) {
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const [error, setError] = useState<string | null>(null)
-    const [formData, setFormData] = useState<TeamMemberFormData>({
-      name: initialData?.name || '',
-      email: initialData?.email || '',
-      title: initialData?.title || '',
-      department: initialData?.department || '',
-      status: initialData?.status || 'ACTIVE',
-      phone: initialData?.phone || '',
-      specialties: initialData?.specialties || [],
-      certifications: initialData?.certifications || [],
-      availability: initialData?.availability || '9am-5pm',
-      notes: initialData?.notes || '',
-    })
-
     const defaultTitle = mode === 'create' ? 'Add Team Member' : 'Edit Team Member'
     const defaultDescription = mode === 'create'
       ? 'Add a new team member to your organization'
       : 'Update team member information'
 
-    const handleChange = useCallback((field: keyof TeamMemberFormData, value: any) => {
-      setFormData(prev => ({ ...prev, [field]: value }))
-      setError(null)
-    }, [])
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-    const validateForm = (): boolean => {
-      if (!formData.name.trim()) {
-        setError('Team member name is required')
-        return false
-      }
-      if (!formData.email.trim()) {
-        setError('Email is required')
-        return false
-      }
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      if (!emailRegex.test(formData.email)) {
-        setError('Invalid email format')
-        return false
-      }
-      if (!formData.title.trim()) {
-        setError('Job title is required')
-        return false
-      }
-      if (!formData.department.trim()) {
-        setError('Department is required')
-        return false
-      }
-      return true
+    const validation: FieldValidation = {
+      name: { validate: (v) => !!v?.trim(), message: 'Team member name is required' },
+      email: [
+        { validate: (v) => !!v?.trim(), message: 'Email is required' },
+        { validate: (v) => emailRegex.test(v), message: 'Invalid email format' },
+      ],
+      title: { validate: (v) => !!v?.trim(), message: 'Job title is required' },
+      department: { validate: (v) => !!v?.trim(), message: 'Department is required' },
     }
 
-    const handleSubmit = useCallback(async (e: React.FormEvent) => {
-      e.preventDefault()
-      
-      if (!validateForm()) return
-
-      setIsSubmitting(true)
-      try {
-        const endpoint = mode === 'create'
-          ? '/api/admin/entities/team-members'
-          : `/api/admin/entities/team-members/${initialData?.id}`
-        const method = mode === 'create' ? 'POST' : 'PATCH'
-
-        const response = await fetch(endpoint, {
-          method,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData),
-        })
-
-        if (!response.ok) {
-          const errorData = await response.json()
-          throw new Error(errorData.message || `Failed to ${mode === 'create' ? 'create' : 'update'} team member`)
-        }
-
-        const result = await response.json()
-        toast.success(
-          mode === 'create'
-            ? 'Team member added successfully'
-            : 'Team member updated successfully'
-        )
-        onSuccess?.(result.id)
+    const formConfig: EntityFormConfig = {
+      endpoint: (mode, id) =>
+        mode === 'create' ? '/api/admin/entities/team-members' : `/api/admin/entities/team-members/${id}`,
+      method: (mode) => (mode === 'create' ? 'POST' : 'PATCH'),
+      successMessage: (mode) =>
+        mode === 'create' ? 'Team member added successfully' : 'Team member updated successfully',
+      onSuccess: (id) => {
+        onSuccess?.(id)
         onClose()
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'An error occurred'
-        setError(errorMessage)
-        toast.error(errorMessage)
-      } finally {
-        setIsSubmitting(false)
-      }
-    }, [formData, mode, initialData?.id, onClose, onSuccess])
+      },
+    }
+
+    const form = useEntityForm<TeamMemberFormData>({
+      initialData: {
+        name: initialData?.name || '',
+        email: initialData?.email || '',
+        title: initialData?.title || '',
+        department: initialData?.department || '',
+        status: initialData?.status || 'ACTIVE',
+        phone: initialData?.phone || '',
+        specialties: initialData?.specialties || [],
+        certifications: initialData?.certifications || [],
+        availability: initialData?.availability || '9am-5pm',
+        notes: initialData?.notes || '',
+      },
+      validation,
+      config: formConfig,
+      entityId: initialData?.id,
+      mode: mode,
+    })
+
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault()
+      form.submit()
+    }
 
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
