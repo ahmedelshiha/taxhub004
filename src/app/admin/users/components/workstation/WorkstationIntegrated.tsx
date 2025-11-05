@@ -172,7 +172,7 @@ export function WorkstationIntegrated({
 
   // Memoized main content
   const mainContent = (
-    <div className="workstation-main-wrapper flex flex-col h-full gap-4 overflow-y-auto">
+    <div className="workstation-main-wrapper flex flex-col h-full gap-4 overflow-y-auto" data-testid="workstation-main-content">
       <QuickActionsBar
         onAddUser={onAddUser}
         onImport={onImport}
@@ -180,6 +180,7 @@ export function WorkstationIntegrated({
         onExport={onExport}
         onRefresh={handleRefresh}
         isLoading={isLoading}
+        data-testid="quick-actions-bar"
       />
 
       <OperationsOverviewCards
@@ -190,10 +191,11 @@ export function WorkstationIntegrated({
           dueThisWeek: 0,
         }}
         isLoading={isLoading}
+        data-testid="operations-overview-cards"
       />
 
-      <div className="workstation-table-section flex-1 flex flex-col min-h-0">
-        <h2 className="text-lg font-semibold mb-4">User Directory</h2>
+      <div className="workstation-table-section flex-1 flex flex-col min-h-0" data-testid="user-directory-section">
+        <h2 className="text-lg font-semibold mb-4" data-testid="user-directory-title">User Directory</h2>
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
