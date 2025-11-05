@@ -119,27 +119,20 @@ export function WorkstationIntegrated({
     context.setProfileOpen(true)
   }, [context])
 
-  // Handle bulk user selection
-  const handleToggleUserSelection = useCallback((userId: string) => {
-    const newSelection = new Set(workstationContext.selectedUserIds)
-    if (newSelection.has(userId)) {
-      newSelection.delete(userId)
+  // Handle selection updates from table
+  const handleSelectUser = useCallback((userId: string, selected: boolean) => {
+    const next = new Set(workstationContext.selectedUserIds)
+    if (selected) next.add(userId); else next.delete(userId)
+    workstationContext.setSelectedUserIds(next)
+  }, [workstationContext])
+
+  const handleSelectAll = useCallback((selected: boolean) => {
+    if (selected) {
+      workstationContext.setSelectedUserIds(new Set(users.map(u => u.id)))
     } else {
-      newSelection.add(userId)
+      workstationContext.setSelectedUserIds(new Set())
     }
-    workstationContext.setSelectedUserIds(newSelection)
-  }, [workstationContext])
-
-  // Handle select all users
-  const handleSelectAllUsers = useCallback(() => {
-    const allUserIds = new Set(users.map(u => u.id))
-    workstationContext.setSelectedUserIds(allUserIds)
   }, [users, workstationContext])
-
-  // Handle clear selection
-  const handleClearSelection = useCallback(() => {
-    workstationContext.setSelectedUserIds(new Set())
-  }, [workstationContext])
 
   // Apply bulk action
   const handleApplyBulkAction = useCallback(async () => {
