@@ -803,7 +803,7 @@ textarea:focus-visible,
 
 .filter-input,
 .filter-select {
-  padding: 0.5rem 0.75rem;
+  padding: 0.625rem 0.75rem;
   background: var(--muted);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -811,11 +811,21 @@ textarea:focus-visible,
   color: var(--foreground);
   transition: border-color 0.2s ease, background-color 0.2s ease;
   font-family: inherit;
+  min-height: 44px;
+  width: 100%;
 }
 
 .filter-input:hover,
 .filter-select:hover {
   border-color: var(--primary);
+}
+
+.filter-input:focus-visible,
+.filter-select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 0;
+  border-color: var(--primary);
+  background-color: var(--background);
 }
 
 .filter-input:focus,
