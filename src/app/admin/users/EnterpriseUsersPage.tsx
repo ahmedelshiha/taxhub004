@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, Suspense, lazy } from 'react'
 import { TabNavigation, TabType } from './components/TabNavigation'
+import ExecutiveDashboardTabWrapper from './components/ExecutiveDashboardTabWrapper'
 import {
-  ExecutiveDashboardTab,
   RbacTab
 } from './components/tabs'
 import { CreateUserModal } from '@/components/admin/shared/CreateUserModal'
