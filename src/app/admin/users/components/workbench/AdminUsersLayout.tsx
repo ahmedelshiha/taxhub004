@@ -30,7 +30,7 @@ import '../styles/admin-users-layout.css'
  * │              │   └──────────────────┘    │
  * ├──────────────┴────────────────────────────┤
  * │  Sticky Footer: BulkActionsPanel (if sel) │
- * └──────────────────────��──────────────────────┘
+ * └────────────────���────────────────────────────┘
  * 
  * Responsive breakpoints:
  * - Desktop (≥1400px): Sidebar visible, 3-column layout
@@ -41,6 +41,7 @@ export default function AdminUsersLayout() {
   const [selectedUserIds, setSelectedUserIds] = useState<Set<string>>(new Set())
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [filters, setFilters] = useState<Record<string, any>>({})
+  const isBuilderEnabled = useIsBuilderEnabled()
 
   const selectedCount = useMemo(() => selectedUserIds.size, [selectedUserIds.size])
 
@@ -50,26 +51,33 @@ export default function AdminUsersLayout() {
 
   return (
     <div className="admin-workbench-container">
-      {/* Sticky Header */}
+      {/* Sticky Header - Builder.io slot with fallback */}
       <header className="admin-workbench-header">
-        <QuickActionsBar />
+        {isBuilderEnabled ? <BuilderHeaderSlot /> : <QuickActionsBar />}
       </header>
 
       {/* Main Content Area */}
       <div className="admin-workbench-main">
-        {/* Left Sidebar - Analytics & Filters (hidden on tablet/mobile) */}
+        {/* Left Sidebar - Analytics & Filters (hidden on tablet/mobile) - Builder.io slot with fallback */}
         <aside className={`admin-workbench-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
-          <AdminSidebar
-            onFilterChange={setFilters}
-            onClose={() => setSidebarOpen(false)}
-          />
+          {isBuilderEnabled ? (
+            <BuilderSidebarSlot
+              onFilterChange={setFilters}
+              onClose={() => setSidebarOpen(false)}
+            />
+          ) : (
+            <AdminSidebar
+              onFilterChange={setFilters}
+              onClose={() => setSidebarOpen(false)}
+            />
+          )}
         </aside>
 
         {/* Main Content */}
         <main className="admin-workbench-content">
-          {/* KPI Metric Cards */}
+          {/* KPI Metric Cards - Builder.io slot with fallback */}
           <div className="admin-workbench-metrics">
-            <OperationsOverviewCards />
+            {isBuilderEnabled ? <BuilderMetricsSlot /> : <OverviewCards />}
           </div>
 
           {/* User Directory Section */}
@@ -88,14 +96,22 @@ export default function AdminUsersLayout() {
         </main>
       </div>
 
-      {/* Sticky Footer - Bulk Operations (only visible when users selected) */}
+      {/* Sticky Footer - Bulk Operations (only visible when users selected) - Builder.io slot with fallback */}
       {selectedCount > 0 && (
         <footer className="admin-workbench-footer">
-          <BulkActionsPanel
-            selectedCount={selectedCount}
-            selectedUserIds={selectedUserIds}
-            onClear={handleClearSelection}
-          />
+          {isBuilderEnabled ? (
+            <BuilderFooterSlot
+              selectedCount={selectedCount}
+              selectedUserIds={selectedUserIds}
+              onClear={handleClearSelection}
+            />
+          ) : (
+            <BulkActionsPanel
+              selectedCount={selectedCount}
+              selectedUserIds={selectedUserIds}
+              onClear={handleClearSelection}
+            />
+          )}
         </footer>
       )}
     </div>
