@@ -182,11 +182,12 @@ export default function BulkActionsPanel({
 
       <style jsx>{`
         .admin-bulk-actions-panel {
-          padding: 0.75rem 1rem;
-          background-color: white;
-          border-top: 1px solid var(--color-border, #e2e8f0);
+          padding: 1rem 1.5rem;
+          background-color: #ffffff;
+          border-top: 1px solid #e5e7eb;
           display: flex;
           align-items: center;
+          box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         .admin-bulk-actions-content {
@@ -208,30 +209,31 @@ export default function BulkActionsPanel({
         .admin-bulk-actions-count {
           font-size: 0.875rem;
           font-weight: 500;
-          color: var(--color-text, #1e293b);
+          color: #6b7280;
           white-space: nowrap;
         }
 
         .admin-bulk-actions-select {
           padding: 0.5rem 0.75rem;
           font-size: 0.875rem;
-          border: 1px solid var(--color-border, #e2e8f0);
+          border: 1px solid #d1d5db;
           border-radius: 0.375rem;
-          background-color: white;
-          color: var(--color-text, #1e293b);
+          background-color: #ffffff;
+          color: #111827;
           cursor: pointer;
           transition: border-color 0.2s, box-shadow 0.2s;
           flex-shrink: 0;
         }
 
         .admin-bulk-actions-select:hover {
-          border-color: var(--color-border-hover, #cbd5e1);
+          border-color: #9ca3af;
+          background-color: #f9fafb;
         }
 
         .admin-bulk-actions-select:focus {
           outline: none;
-          border-color: var(--color-focus, #3b82f6);
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+          border-color: #1f55d4;
+          box-shadow: 0 0 0 3px rgba(31, 85, 212, 0.1);
         }
 
         .admin-bulk-actions-right {
@@ -245,7 +247,7 @@ export default function BulkActionsPanel({
           padding: 0.375rem;
           border-radius: 0.375rem;
           background-color: transparent;
-          color: var(--color-text-secondary, #64748b);
+          color: #6b7280;
           cursor: pointer;
           transition: background-color 0.2s, color 0.2s;
           display: flex;
@@ -254,12 +256,12 @@ export default function BulkActionsPanel({
         }
 
         .admin-bulk-actions-clear:hover {
-          background-color: var(--color-bg-hover, rgba(0, 0, 0, 0.05));
-          color: var(--color-text, #1e293b);
+          background-color: #f3f4f6;
+          color: #111827;
         }
 
         .admin-bulk-actions-clear:focus-visible {
-          outline: 2px solid var(--color-focus, #3b82f6);
+          outline: 2px solid #1f55d4;
           outline-offset: 2px;
         }
 
@@ -283,21 +285,6 @@ export default function BulkActionsPanel({
             justify-content: flex-end;
           }
         }
-
-        @media (prefers-color-scheme: dark) {
-          .admin-bulk-actions-panel {
-            background-color: var(--color-surface-dark, #1a202c);
-            border-top-color: var(--color-border-dark, #334155);
-          }
-
-          .admin-bulk-actions-select {
-            background-color: var(--color-surface-dark, #1e293b);
-            color: var(--color-text-dark, #f1f5f9);
-            border-color: var(--color-border-dark, #334155);
-          }
-
-          .admin-bulk-actions-count {
-            color: var(--color-text-dark, #f1f5f9);
           }
 
           .admin-bulk-actions-clear {
