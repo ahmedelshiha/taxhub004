@@ -24,7 +24,7 @@ describe('BulkActionsPanel', () => {
         />
       )
 
-      expect(screen.getByText(/5 users? selected/i)).toBeInTheDocument()
+      expect(screen.getByText(/5 users selected/i)).toBeInTheDocument()
     })
 
     it('should render action type selector', () => {
@@ -36,8 +36,8 @@ describe('BulkActionsPanel', () => {
         />
       )
 
-      const selector = screen.getByRole('combobox') || screen.getByRole('listbox')
-      expect(selector).toBeInTheDocument()
+      const selects = screen.getAllByRole('combobox')
+      expect(selects.length).toBeGreaterThanOrEqual(2)
     })
 
     it('should render action value selector', () => {
@@ -49,9 +49,8 @@ describe('BulkActionsPanel', () => {
         />
       )
 
-      // Look for input or select for action value
       const inputs = screen.getAllByRole('combobox')
-      expect(inputs.length).toBeGreaterThan(0)
+      expect(inputs.length).toBeGreaterThanOrEqual(2)
     })
 
     it('should render preview button', () => {
@@ -63,7 +62,19 @@ describe('BulkActionsPanel', () => {
         />
       )
 
-      expect(screen.getByRole('button', { name: /preview/i })).toBeInTheDocument()
+      expect(screen.getByTestId('preview-button')).toBeInTheDocument()
+    })
+
+    it('should render apply button', () => {
+      render(
+        <BulkActionsPanel
+          selectedCount={1}
+          selectedUserIds={new Set(['1'])}
+          onClear={mockOnClear}
+        />
+      )
+
+      expect(screen.getByTestId('apply-button')).toBeInTheDocument()
     })
 
     it('should render clear button', () => {
