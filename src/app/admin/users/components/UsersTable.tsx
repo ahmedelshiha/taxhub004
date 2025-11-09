@@ -128,7 +128,7 @@ export const UsersTable = memo(function UsersTable({
             <VirtualScroller
               items={users}
               itemHeight={56}
-              maxHeight="100%"
+              maxHeight="auto"
               renderItem={(user) => renderUserRow(user)}
               overscan={5}
               getKey={(user) => user.id}

@@ -69,7 +69,7 @@ export const PermissionsTab = memo(function PermissionsTab({ user }: Permissions
   }, [searchQuery])
 
   const handleRoleChange = useCallback((newRole: string) => {
-    setSelectedRole(newRole)
+    setSelectedRole(newRole as 'ADMIN' | 'CLIENT' | 'TEAM_MEMBER' | 'TEAM_LEAD' | 'STAFF' | 'VIEWER')
     setError(null)
     // Add to history
     setChangeHistory(prev => [...prev, { role: selectedRole, permissions: selectedPermissions }])
