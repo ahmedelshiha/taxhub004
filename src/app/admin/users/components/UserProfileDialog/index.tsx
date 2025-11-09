@@ -8,7 +8,8 @@ import { OverviewTab } from './OverviewTab'
 import { DetailsTab } from './DetailsTab'
 import { ActivityTab } from './ActivityTab'
 import { SettingsTab } from './SettingsTab'
-import { X, User, FileText, Clock, Lock, MoreVertical } from 'lucide-react'
+import { PermissionsTab } from './PermissionsTab'
+import { X, User, FileText, Clock, Lock, Shield, MoreVertical } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,11 +22,12 @@ interface UserProfileDialogProps {
   onTabChange?: (tab: string) => void
 }
 
-type TabType = 'overview' | 'details' | 'activity' | 'settings'
+type TabType = 'overview' | 'details' | 'permissions' | 'activity' | 'settings'
 
 const navItems: Array<{ id: TabType; label: string; icon: React.ReactNode }> = [
   { id: 'overview', label: 'Overview', icon: <User className="w-5 h-5" /> },
   { id: 'details', label: 'Details', icon: <FileText className="w-5 h-5" /> },
+  { id: 'permissions', label: 'Permissions', icon: <Shield className="w-5 h-5" /> },
   { id: 'activity', label: 'Activity', icon: <Clock className="w-5 h-5" /> },
   { id: 'settings', label: 'Settings', icon: <Lock className="w-5 h-5" /> }
 ]
@@ -188,6 +190,7 @@ export const UserProfileDialog = memo(function UserProfileDialog({
               {/* Content Sections */}
               {activeTab === 'overview' && <OverviewTab user={selectedUser} />}
               {activeTab === 'details' && <DetailsTab user={selectedUser} isEditing={editMode} />}
+              {activeTab === 'permissions' && <PermissionsTab user={selectedUser} />}
               {activeTab === 'activity' && <ActivityTab userId={selectedUser.id} />}
               {activeTab === 'settings' && <SettingsTab user={selectedUser} />}
             </div>
