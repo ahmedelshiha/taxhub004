@@ -10,6 +10,7 @@ import { SettingsTab } from '../UserProfileDialog/SettingsTab'
 import { useUserActions } from '../../hooks/useUserActions'
 import { toast } from 'sonner'
 import UnifiedPermissionModal from '@/components/admin/permissions/UnifiedPermissionModal'
+import type { Permission } from '@/lib/permissions'
 
 export default function InlineUserProfile({ onBack }: { onBack: () => void }) {
   const {
