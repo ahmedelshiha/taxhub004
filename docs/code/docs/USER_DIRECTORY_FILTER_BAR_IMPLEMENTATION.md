@@ -51,7 +51,7 @@ Implement a minimal, Excel-style filter bar above the User Directory table that 
 | Feature | Oracle Cloud | SAP Analytics | Current Plan | Priority |
 |---------|--------------|---------------|--------------|----------|
 | **Basic Filters** | ✅ | ✅ | ✅ MVP | Must Have |
-| Text Search (name/email/phone) | ✅ | ✅ | ✅ MVP | Must Have |
+| Text Search (name/email/phone) | �� | ✅ | ✅ MVP | Must Have |
 | Dropdown Filters (Role/Status) | ✅ | ✅ | ✅ MVP | Must Have |
 | Multi-select Filters | ✅ | ✅ | ❌ V2 | High |
 | Advanced Search Operators | ✅ | ✅ | ❌ V2 | High |
@@ -128,6 +128,73 @@ Implement a minimal, Excel-style filter bar above the User Directory table that 
 
 ---
 
+## 🎨 Visual Design: MVP vs Enterprise
+
+### MVP Version (Current Plan)
+```
+┌─────────────────────────────────────────────────────────────┐
+│ ☐ [Search name, email, phone...] │ Role: All ▼ │ Status: All ▼ │ Clear │
+├─────────────────────────────────────────────────────────────┤
+│ 3 selected • 6 of 12 users                                  │
+└─────────────────────────��───────────────────────────────────┘
+```
+
+**Characteristics:**
+- Minimal, horizontal layout
+- Single-select dropdowns
+- Simple text search
+- Result counter only
+- Compact styling (Excel-like)
+
+### Enterprise Version (Recommended for V1)
+```
+┌─────────────────────────────────────────────────────────────┐
+│ ☐ [Search name, email, phone...] │ Operators ▼ │            │
+├─────────────────────────────────────────────────────────────┤
+│ [Search: john] [Role: Admin, Lead] [Status: Active, Pending] │
+│ [🗑 Clear All]                                               │
+├─────────────────────────────────────────────────────────────┤
+│ 👁 Columns   📥 Import   📤 Export   ⚙️ Advanced            │
+├────────────────────────────────────────────────��────────────┤
+│ 3 selected • 6 of 12 users • Filtered ✓                    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Enhancements:**
+- Filter pills/badges for active filters
+- Multi-select dropdowns
+- Action buttons (Export, Import, Columns)
+- Advanced search operators
+- Visual "Filtered" indicator
+- Bulk operations toolbar
+
+### Enterprise+ Version (Phase 3: Full-Featured)
+```
+┌─────────────────────────────────────────────────────────────┐
+│ ☐ [Search...]  │ Saved: Last 30 Days ▼ │ Advanced ⚙️       │
+├─────────────────────────────────────────────────────────────┤
+│ [Search: john] [Role: Admin, Lead] [Status: Active, Pending] │
+│ [CreatedDate >= 2024-01-01] [OR/AND] [🗑 Clear All]        │
+├─────────────────────────────────────────────────────────────┤
+│ Recent: [Active Users] [New This Month] [Inactive] [My Team] │
+│ 👁 Columns │ 📥 Import │ 📤 Export │ 💾 Save As │ Advanced │
+├─────────────────────────────────────────────────────────────┤
+│ 3 selected • 6 of 12 users • Filtered ✓ • Modified Today ✎  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Full Enterprise Features:**
+- Saved filter presets/templates
+- Advanced query builder (AND/OR logic)
+- Date range filters
+- Recent/quick filters
+- Column management panel
+- Filter suggestions
+- Bulk operation controls
+- Filter modification history
+
+---
+
 ## 🏗️ Technical Architecture
 
 ### Data Flow Diagram
@@ -158,7 +225,7 @@ Implement a minimal, Excel-style filter bar above the User Directory table that 
 │  │ UsersTable (Virtualized)        │   │
 │  │  ├─ selectedUserIds: Set        │   │
 │  │  └─ onSelectAll()               │   │
-│  └─────────────────────────────────┘   │
+│  └──────────────────��──────────────┘   │
 │                                         │
 └─────────────────────────────────────────┘
 ```
@@ -1047,7 +1114,7 @@ interface SearchConfig {
 
 **Example Searches:**
 - `john` → Contains "john" (default)
-- `=john` → Exact match "john"
+- `=john` �� Exact match "john"
 - `^john` → Starts with "john"
 - `john$` → Ends with "john"
 - `john|jane` → Regex OR operator
