@@ -110,15 +110,29 @@ Epic: ENT-1 Entity & People management
   - CSV importer with validation; UI in /admin. (PENDING)
 
 ### Phase 1.1 — Business Account Setup Wizard (Modal)
+**Status: ✅ CORE COMPLETE (Desktop), ⏳ Mobile/Testing PENDING**
+
 Epic: ENT-1.1 Setup wizard
-- TCK-1.1a Modal UI (desktop/web)
-  - New component src/components/portal/business-setup/SetupWizard.tsx; ARIA dialog; tabs Existing/New/Individual.
-- TCK-1.1b Validators & adapters
-  - src/lib/registries/* for UAE/KSA/EGY; GET /api/registries/:country/license/:number; unit tests.
-- TCK-1.1c Setup API & consent
-  - POST /api/entities/setup; POST /api/consents; audit events; idempotency.
-- TCK-1.1d Mobile parity
-  - Swipe-to-setup interaction; RTL mirrored gesture; e2e.
+- ✅ TCK-1.1a Modal UI (desktop/web)
+  - ✅ src/components/portal/business-setup/SetupWizard.tsx with ARIA tabs
+  - ✅ ExistingBusiness tab: License lookup, auto-fill, zone selection
+  - �� NewStartup tab: Business creation with legal form selection
+  - ✅ Individual tab: Individual taxpayer setup with ID/TIN validation
+
+- ✅ TCK-1.1b Validators & adapters
+  - ✅ src/app/api/registries/[country]/license/[number]/route.ts with mock adapters
+  - ✅ Zod validation in each tab component (3 schemas)
+  - ✅ License lookup with auto-fill functionality
+
+- ✅ TCK-1.1c Setup API & consent
+  - ✅ POST /api/entities/setup with idempotency (already exists)
+  - ✅ Consent recording with IP/UA in setup flow
+  - ✅ Audit events for setup requests
+
+- ❌ TCK-1.1d Mobile parity & Testing
+  - Swipe-to-setup interaction (PENDING)
+  - RTL verification (PENDING)
+  - E2E tests (PENDING)
 
 ### Phase 1.1B — Business Verification
 Epic: ENT-1.2 Verification job
