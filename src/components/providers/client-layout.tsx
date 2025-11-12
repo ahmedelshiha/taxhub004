@@ -297,7 +297,7 @@ export function ClientLayout({ children, session, orgName, orgLogoUrl, contactEm
           Only show main site navigation on NON-admin routes
           Admin routes will have their own dedicated layout with sidebar navigation
         */}
-        {!isAdminRoute && <Navigation />}
+        {!isAdminRoute && <Navigation currentLocale={locale} orgName={uiOrgName} orgLogoUrl={uiOrgLogoUrl} />}
         <main id="site-main-content" tabIndex={-1} role="main" className="flex-1">
           {children}
         </main>
