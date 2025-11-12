@@ -12,7 +12,7 @@ const AnalysisRequestSchema = z.object({
 
 type AnalysisType = z.infer<typeof AnalysisRequestSchema>['analysisType']
 
-async function POST(
+async function _POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -179,7 +179,7 @@ async function POST(
   }
 }
 
-async function GET(
+async function _GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -234,5 +234,5 @@ async function GET(
   }
 }
 
-export const POST = withTenantContext(POST, { requireAuth: true })
-export const GET = withTenantContext(GET, { requireAuth: true })
+export const POST = withTenantContext(_POST, { requireAuth: true })
+export const GET = withTenantContext(_GET, { requireAuth: true })
