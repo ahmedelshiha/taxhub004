@@ -40,8 +40,7 @@ export const POST = withTenantContext(async (
     }
 
     // Get provider and sync transactions
-    const factory = new BankingProviderFactory()
-    const provider = factory.getProvider(connection.provider)
+    const provider = createBankingProvider(connection.provider)
 
     let transactionsFromBank = []
     let syncError: string | null = null
