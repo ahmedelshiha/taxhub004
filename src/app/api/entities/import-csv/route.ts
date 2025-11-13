@@ -10,6 +10,13 @@ export const POST = withTenantContext(
     try {
       const { userId, tenantId } = requireTenantContext();
 
+      if (!userId || !tenantId) {
+        return NextResponse.json(
+          { error: 'Unauthorized' },
+          { status: 401 }
+        );
+      }
+
       const formData = await request.formData();
       const file = formData.get('file') as File;
 
