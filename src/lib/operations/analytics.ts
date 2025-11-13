@@ -11,7 +11,7 @@ export const MetricSchema = z.object({
   value: z.number(),
   unit: z.string(),
   timestamp: z.date(),
-  tags: z.record(z.any()).optional(),
+  tags: z.record(z.string(), z.any()).optional(),
 })
 
 export const DashboardSchema = z.object({
@@ -23,7 +23,7 @@ export const DashboardSchema = z.object({
     type: z.enum(['KPI', 'CHART', 'TABLE', 'TIMELINE', 'GAUGE']),
     metric: z.string(),
     title: z.string(),
-    config: z.record(z.any()).optional(),
+    config: z.record(z.string(), z.any()).optional(),
   })),
   createdAt: z.date(),
   updatedAt: z.date(),

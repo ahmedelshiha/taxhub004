@@ -28,7 +28,7 @@ export const StepUpChallengeSchema = z.object({
   maxAttempts: z.number().default(5),
   verified: z.boolean().default(false),
   verifiedAt: z.date().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
 })
 
 export const DeviceSchema = z.object({
