@@ -142,27 +142,40 @@ export const UserForm = React.forwardRef<HTMLFormElement, UserFormProps>(
               )}
             </div>
 
-            {/* Email Field */}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-semibold text-slate-900">
-                Email Address <span className="text-red-600">*</span>
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="john.doe@example.com"
-                disabled={mode === 'edit' || isSubmitting || isLoading}
-                {...register('email')}
-                aria-invalid={!!errors.email}
-                className={`h-10 border border-slate-300 rounded-lg ${mode === 'edit' ? 'bg-slate-50 cursor-not-allowed' : 'focus:ring-2 focus:ring-blue-500 focus:border-transparent'}`}
-              />
-              {errors.email && errors.email.message && (
-                <p className="text-sm text-red-600 font-medium">{String(errors.email.message)}</p>
-              )}
-              {mode === 'edit' && (
+            {/* Email Field - Create Mode Only */}
+            {mode === 'create' && (
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-semibold text-slate-900">
+                  Email Address <span className="text-red-600">*</span>
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="john.doe@example.com"
+                  disabled={isSubmitting || isLoading}
+                  {...register('email')}
+                  aria-invalid={!!errors.email}
+                  className="h-10 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                {errors.email && errors.email.message && (
+                  <p className="text-sm text-red-600 font-medium">{String(errors.email.message)}</p>
+                )}
+              </div>
+            )}
+            {mode === 'edit' && initialData?.email && (
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold text-slate-900">
+                  Email Address
+                </Label>
+                <Input
+                  type="email"
+                  value={initialData.email}
+                  disabled
+                  className="h-10 border border-slate-300 rounded-lg bg-slate-50 cursor-not-allowed text-slate-600"
+                />
                 <p className="text-xs text-slate-600">Email address cannot be changed</p>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Phone Field */}
             <div className="space-y-2">
