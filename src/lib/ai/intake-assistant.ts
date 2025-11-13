@@ -31,7 +31,7 @@ export const IntakeQuestionSchema = z.object({
 export const IntakeResponseSchema = z.object({
   tenantId: z.string(),
   userId: z.string(),
-  responses: z.record(z.any()),
+  responses: z.record(z.string(), z.any()),
   completionPercentage: z.number().min(0).max(100),
   stage: z.enum(['started', 'in_progress', 'completed', 'abandoned']),
   generatedChecklist: z.array(z.object({

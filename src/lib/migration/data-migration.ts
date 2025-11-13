@@ -23,7 +23,7 @@ export const MigrationPlanSchema = z.object({
     'EXPENSES',
     'CONTACTS',
   ])),
-  estimatedRecords: z.record(z.number()),
+  estimatedRecords: z.record(z.string(), z.number()),
   startDate: z.date().optional(),
   plannedCutoverDate: z.date(),
   status: z.enum(['PLANNING', 'IN_PROGRESS', 'DUAL_RUN', 'CUTOVER', 'COMPLETED', 'ROLLED_BACK']),

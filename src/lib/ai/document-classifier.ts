@@ -25,7 +25,7 @@ export const DocumentClassificationSchema = z.object({
     tags: z.array(z.string()),
     description: z.string(),
   }),
-  extractedData: z.record(z.any()).optional(), // Key-value pairs extracted from document
+  extractedData: z.record(z.string(), z.any()).optional(), // Key-value pairs extracted from document
   anomalies: z.array(z.object({
     type: z.enum(['unusual_amount', 'missing_field', 'format_error', 'date_mismatch', 'duplicate']),
     severity: z.enum(['low', 'medium', 'high']),
