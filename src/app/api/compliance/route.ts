@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withTenantContext } from "@/lib/api-wrapper";
 import { requireTenantContext } from "@/lib/tenant-utils";
+import { logger } from "@/lib/logger";
 
 export const GET = withTenantContext(async (request: NextRequest) => {
   try {
