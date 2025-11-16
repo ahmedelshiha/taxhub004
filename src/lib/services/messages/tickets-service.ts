@@ -94,6 +94,7 @@ export class TicketsService {
     return {
       tickets: tickets.map((ticket) => ({
         ...ticket,
+        category: ticket.category as TicketCategory,
         createdAt: ticket.createdAt.toISOString(),
         updatedAt: ticket.updatedAt.toISOString(),
         resolvedAt: ticket.resolvedAt?.toISOString() || null,
@@ -148,6 +149,7 @@ export class TicketsService {
 
     return {
       ...ticket,
+      category: ticket.category as TicketCategory,
       createdAt: ticket.createdAt.toISOString(),
       updatedAt: ticket.updatedAt.toISOString(),
       resolvedAt: ticket.resolvedAt?.toISOString() || null,
@@ -163,7 +165,7 @@ export class TicketsService {
         ...history,
         changedAt: history.changedAt.toISOString(),
       })),
-    };
+    } as SupportTicket;
   }
 
   /**
@@ -207,13 +209,14 @@ export class TicketsService {
     return {
       ...ticket,
       assignedToId: ticket.assignedToId,
+      category: ticket.category as TicketCategory,
       createdAt: ticket.createdAt.toISOString(),
       updatedAt: ticket.updatedAt.toISOString(),
       resolvedAt: ticket.resolvedAt?.toISOString() || null,
       dueAt: ticket.dueAt?.toISOString() || null,
       slaFirstResponseAt: ticket.slaFirstResponseAt?.toISOString() || null,
       slaResolutionAt: ticket.slaResolutionAt?.toISOString() || null,
-    };
+    } as SupportTicket;
   }
 
   /**
