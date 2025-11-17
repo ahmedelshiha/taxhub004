@@ -53,9 +53,26 @@ export const GET = withTenantContext(async (request: NextRequest) => {
       invoices: formattedInvoices,
     })
   } catch (error) {
-    logger.error('Error fetching invoices', { error })
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+
+    logger.error('Error fetching invoices', {
+      error: errorMsg,
+      userId: ctx.userId,
+      tenantId: ctx.tenantId,
+    });
+
+    console.error('[INVOICES_API_ERROR] GET failed:', {
+      message: errorMsg,
+      stack: errorStack,
+    });
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: 'Internal server error',
+        message: errorMsg,
+        ...(process.env.NODE_ENV === 'development' && { details: errorStack }),
+      },
       { status: 500 }
     )
   }
@@ -102,9 +119,26 @@ export const POST = withTenantContext(async (request: NextRequest) => {
         { status: 400 }
       )
     }
-    logger.error('Error creating invoice', { error })
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+
+    logger.error('Error creating invoice', {
+      error: errorMsg,
+      userId: ctx.userId,
+      tenantId: ctx.tenantId,
+    });
+
+    console.error('[INVOICES_API_ERROR] POST failed:', {
+      message: errorMsg,
+      stack: errorStack,
+    });
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: 'Internal server error',
+        message: errorMsg,
+        ...(process.env.NODE_ENV === 'development' && { details: errorStack }),
+      },
       { status: 500 }
     )
   }

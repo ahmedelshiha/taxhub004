@@ -45,7 +45,10 @@
     "db:migrate:profile-prefs": "tsx scripts/migrate-booking-preferences-to-user-profile.ts",
     "db:rollback:profile-prefs": "tsx scripts/rollback-user-profile-preferences.ts",
     "discover:keys": "tsx scripts/discover-translation-keys.ts",
-    "test:i18n": "tsx scripts/test-i18n.ts"
+    "test:i18n": "tsx scripts/test-i18n.ts",
+    "test:api": "bash scripts/test-api-health.sh",
+    "test:api:prod": "bash scripts/test-api-health.sh https://taxhub-one.vercel.app",
+    "verify:vercel": "bash scripts/vercel-build.sh"
   },
   "dependencies": {
     "@dnd-kit/accessibility": "^3.1.0",

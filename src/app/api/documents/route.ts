@@ -184,9 +184,20 @@ export const GET = withTenantContext(async (request: NextRequest) => {
       )
     }
 
-    console.error('Documents list API error:', error)
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+
+    console.error('Documents list API error:', {
+      message: errorMsg,
+      stack: errorStack,
+    });
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: 'Internal server error',
+        message: errorMsg,
+        ...(process.env.NODE_ENV === 'development' && { details: errorStack }),
+      },
       { status: 500 }
     )
   }
@@ -267,9 +278,20 @@ export const POST = withTenantContext(async (request: NextRequest) => {
       },
     })
   } catch (error) {
-    console.error('Documents upload API error:', error)
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+
+    console.error('Documents upload API error:', {
+      message: errorMsg,
+      stack: errorStack,
+    });
+
     return NextResponse.json(
-      { error: 'Internal server error' },
+      {
+        error: 'Internal server error',
+        message: errorMsg,
+        ...(process.env.NODE_ENV === 'development' && { details: errorStack }),
+      },
       { status: 500 }
     )
   }

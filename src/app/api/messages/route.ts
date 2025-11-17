@@ -51,12 +51,20 @@ export const GET = withTenantContext(async (request: NextRequest) => {
       },
     });
   } catch (error: any) {
-    console.error("Error fetching message threads:", error);
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+
+    console.error("Error fetching message threads:", {
+      message: errorMsg,
+      stack: errorStack,
+    });
+
     return NextResponse.json(
       {
         success: false,
         error: "Failed to fetch message threads",
-        details: error.message,
+        details: errorMsg,
+        ...(process.env.NODE_ENV === 'development' && { stack: errorStack }),
       },
       { status: 500 }
     );
