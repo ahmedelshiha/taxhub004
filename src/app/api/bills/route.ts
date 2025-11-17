@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { withTenantContext } from "@/lib/api-wrapper";
 import { requireTenantContext } from "@/lib/tenant-utils";
+import type { TenantContext } from "@/lib/tenant-context";
 import { billsService } from "@/lib/services/bills/bills-service";
 import { logger } from "@/lib/logger";
 import type { BillFilters } from "@/types/bills";
