@@ -304,24 +304,13 @@ export function withTenantContext(
 
         logger.error('Handler failed within tenant context', {
           error: errorMessage,
+          stack: errorStack,
           tenantId: context.tenantId,
           userId: context.userId,
           path: request.url,
           method: request.method,
+          requestId,
         })
-
-        // Log to console for Vercel/production debugging
-        console.error(
-          '[API_ERROR] Handler exception:',
-          {
-            message: errorMessage,
-            stack: errorStack,
-            tenantId: context.tenantId,
-            userId: context.userId,
-            method: request.method,
-            path: request.url,
-          }
-        )
 
         return attachRequestId(
           NextResponse.json(
