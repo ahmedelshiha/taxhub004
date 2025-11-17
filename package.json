@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "pnpm run next-dev",
     "next-dev": "next dev",
-    "build": "SENTRY_CLI_SKIP=true bash scripts/check-required-envs.sh && prisma generate && pnpm lint && SENTRY_CLI_ENABLED=false next build",
+    "build": "SENTRY_CLI_SKIP=true bash scripts/check-required-envs.sh && prisma generate && pnpm lint && SENTRY_CLI_SKIP=true SENTRY_CLI_ENABLED=false next build",
     "build:skip-env": "SENTRY_CLI_SKIP=true SKIP_ENV_VALIDATION=true bash scripts/check-required-envs.sh && prisma generate && SENTRY_CLI_ENABLED=false next build",
     "typecheck": "prisma generate && tsc --noEmit -p tsconfig.build.json",
     "lint:semgrep": "semgrep --config semgrep/edge-node-imports.yml || true",
