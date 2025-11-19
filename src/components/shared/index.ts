@@ -31,6 +31,7 @@ export { default as DateRangePicker } from './inputs/DateRangePicker'
 export { default as MultiSelect } from './inputs/MultiSelect'
 export { default as ServiceFilter } from './inputs/ServiceFilter'
 export { type ServiceFilterValues } from './inputs/ServiceFilter'
+export { BookingCalendar } from './inputs/BookingCalendar'
 
 // Tables - List components
 export { default as SharedDataTable } from './tables/SharedDataTable'
