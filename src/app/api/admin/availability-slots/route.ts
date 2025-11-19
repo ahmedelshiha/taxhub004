@@ -116,10 +116,11 @@ export const PUT = withTenantContext(async (request: NextRequest) => {
   if (!parsed.success) return NextResponse.json({ error: 'Invalid payload', details: parsed.error.issues }, { status: 400 })
 
   try {
+    const slotDate = new Date(parsed.data.date)
     const updateData: any = {
       serviceId: parsed.data.serviceId,
       teamMemberId: parsed.data.teamMemberId || null,
-      date: new Date(parsed.data.date),
+      date: slotDate,
       startTime: parsed.data.startTime,
       endTime: parsed.data.endTime,
       available: parsed.data.available ?? true,
@@ -130,6 +131,14 @@ export const PUT = withTenantContext(async (request: NextRequest) => {
     if (isMultiTenancyEnabled() && tenantId) Object.assign(where, tenantFilter(tenantId))
 
     const updated = await prisma.availabilitySlot.update({ where, data: updateData })
+
+    // Publish real-time event for portal and admin notifications
+    publishSlotUpdated(
+      parsed.data.serviceId,
+      format(slotDate, 'yyyy-MM-dd'),
+      parsed.data.teamMemberId
+    )
+
     return NextResponse.json({ availabilitySlot: updated })
   } catch (e: any) {
     console.error('admin/availability-slots PUT error', e)
