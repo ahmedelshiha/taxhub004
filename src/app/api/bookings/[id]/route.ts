@@ -179,6 +179,13 @@ export const PUT = withTenantContext(
         },
       })
 
+      // Publish real-time event for portal and admin notifications
+      publishBookingUpdated({
+        id: updated.id,
+        serviceId: updated.serviceId,
+        action: 'updated',
+      })
+
       // Filter fields based on role
       const filteredBooking = filterBookingFields(updated, ctx.role, ctx.userId)
 
