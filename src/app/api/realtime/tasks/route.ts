@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
 import { subscribeToTaskEvents, TaskEventPayload } from '@/lib/realtime/task-events'
+import { withTenantContext } from '@/lib/api-wrapper'
+import { requireTenantContext } from '@/lib/tenant-context'
 
 /**
  * GET /api/realtime/tasks
@@ -21,11 +22,12 @@ import { subscribeToTaskEvents, TaskEventPayload } from '@/lib/realtime/task-eve
  * - TASK_STATUS_CHANGED: Task status changed
  * - COMMENT_ADDED: Comment added to task
  */
-export async function GET(request: NextRequest) {
-  const session = await getServerSession()
+export const GET = withTenantContext(async (request: NextRequest) => {
+  const ctx = requireTenantContext()
+  const { userId } = ctx
 
   // Require authentication
-  if (!session || !session.user) {
+  if (!userId) {
     return new NextResponse('Unauthorized', { status: 401 })
   }
 
@@ -34,8 +36,8 @@ export async function GET(request: NextRequest) {
 
   // Check if client prefers WebSocket (would be handled by a WebSocket handler)
   // For now, implement SSE (Server-Sent Events)
-  return handleSSE(taskId, session.user.id)
-}
+  return handleSSE(taskId, userId)
+})
 
 /**
  * Handle SSE (Server-Sent Events) connections

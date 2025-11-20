@@ -4,24 +4,21 @@
  * POST /api/notifications/mark-as-read - Mark notification(s) as read
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { respond } from '@/lib/api-response'
 import { NotificationHub } from '@/lib/notifications/hub'
 import type { NotificationQueryOptions } from '@/types/notifications'
 import { z } from 'zod'
+import { withTenantContext } from '@/lib/api-wrapper'
+import { requireTenantContext } from '@/lib/tenant-context'
 
 // GET - List notifications for current user
-export async function GET(request: NextRequest) {
+export const GET = withTenantContext(async (request: NextRequest) => {
   try {
-    const session = await getServerSession()
+    const ctx = requireTenantContext()
+    const { userId } = ctx
 
-    if (!session?.user) {
-      return respond.unauthorized()
-    }
-
-    const userId = session.user.id
     if (!userId) {
       return respond.unauthorized()
     }
@@ -60,18 +57,14 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching notifications:', error)
     return respond.serverError()
   }
-}
+})
 
 // POST - Mark notifications as read
-export async function POST(request: NextRequest) {
+export const POST = withTenantContext(async (request: NextRequest) => {
   try {
-    const session = await getServerSession()
+    const ctx = requireTenantContext()
+    const { userId } = ctx
 
-    if (!session?.user) {
-      return respond.unauthorized()
-    }
-
-    const userId = session.user.id
     if (!userId) {
       return respond.unauthorized()
     }
@@ -117,4 +110,4 @@ export async function POST(request: NextRequest) {
     console.error('Error updating notifications:', error)
     return respond.serverError()
   }
-}
+})

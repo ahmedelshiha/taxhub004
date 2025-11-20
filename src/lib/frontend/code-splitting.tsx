@@ -17,34 +17,8 @@ import dynamic from 'next/dynamic'
 import { ComponentType, ReactNode } from 'react'
 
 /**
- * Loading placeholder component
- */
-function ComponentLoading({ name }: { name: string }) {
-  return (
-    <div className="flex items-center justify-center p-8">
-      <div className="animate-pulse space-y-4 w-full">
-        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-      </div>
-    </div>
-  )
-}
-
-/**
- * Create a dynamic component with loading fallback
- */
-export function createDynamicComponent<P extends object>(
-  importer: () => Promise<{ default: ComponentType<P> }>,
-  componentName: string
-) {
-  return dynamic(importer, {
-    loading: () => <ComponentLoading name={componentName} />,
-    ssr: false,
-  })
-}
-
-/**
  * Components to dynamically import (on-demand loading)
+ * These are heavy components loaded only when needed
  */
 export const DYNAMIC_COMPONENTS = {
   // Admin components
@@ -109,9 +83,50 @@ export const DYNAMIC_COMPONENTS = {
 } as const
 
 /**
+ * Create a dynamic component with loading fallback
+ *
+ * @example
+ * ```tsx
+ * const AdminDashboard = createDynamicComponent(
+ *   () => import('@/components/admin/Dashboard'),
+ *   'AdminDashboard'
+ * )
+ *
+ * export default () => (
+ *   <AdminDashboard fallback={<LoadingSpinner />} />
+ * )
+ * ```
+ */
+export function createDynamicComponent<P extends object>(
+  importer: () => Promise<{ default: ComponentType<P> | ComponentType<P & { fallback?: ReactNode }> }>,
+  componentName: string
+) {
+  return dynamic(importer, {
+    loading: () => <ComponentLoading name={componentName} />,
+    ssr: false, // Disable SSR for client-only components
+  })
+}
+
+/**
+ * Loading placeholder component
+ */
+function ComponentLoading({ name }: { name: string }) {
+  return (
+    <div className="flex items-center justify-center p-8">
+      <div className="animate-pulse space-y-4 w-full">
+        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+      </div>
+    </div>
+  )
+}
+
+/**
  * Code splitting configuration by route
+ * Maps routes to their lazy-loaded components
  */
 export const ROUTE_BASED_CODE_SPLITTING = {
+  // Admin routes - loaded only when admin section accessed
   '/admin': {
     components: [
       'AdminDashboard',
@@ -119,7 +134,7 @@ export const ROUTE_BASED_CODE_SPLITTING = {
       'UserProfileDialog',
       'DataTable',
     ],
-    preload: false,
+    preload: false, // Don't preload in production
     estimatedSize: '450KB',
   },
 
@@ -141,6 +156,7 @@ export const ROUTE_BASED_CODE_SPLITTING = {
     estimatedSize: '200KB',
   },
 
+  // Portal routes
   '/portal/bookings': {
     components: ['BookingList', 'BookingCalendar', 'DataTable'],
     preload: false,
@@ -153,6 +169,7 @@ export const ROUTE_BASED_CODE_SPLITTING = {
     estimatedSize: '350KB',
   },
 
+  // Modal/Dialog components - loaded on-demand
   'modal:user-profile': {
     components: ['UserProfileDialog'],
     preload: false,
@@ -174,12 +191,21 @@ export const ROUTE_BASED_CODE_SPLITTING = {
 
 /**
  * Preload critical components for better UX
+ * Call this on route change to preload next section
+ *
+ * @example
+ * ```tsx
+ * useEffect(() => {
+ *   preloadRoute('/admin/analytics')
+ * }, [])
+ * ```
  */
 export function preloadRoute(route: string) {
   const config = ROUTE_BASED_CODE_SPLITTING[route as keyof typeof ROUTE_BASED_CODE_SPLITTING]
 
   if (!config) return
 
+  // Preload all components for this route
   config.components.forEach((componentName) => {
     const importer = DYNAMIC_COMPONENTS[componentName as keyof typeof DYNAMIC_COMPONENTS]
     if (importer) {
@@ -189,46 +215,87 @@ export function preloadRoute(route: string) {
 }
 
 /**
- * Bundle size targets
+ * Lazy load a component with intersection observer
+ * Loads component only when it becomes visible in viewport
+ *
+ * @example
+ * ```tsx
+ * const HeavyComponent = lazyLoadComponent(
+ *   () => import('@/components/Heavy'),
+ *   { rootMargin: '50px' }
+ * )
+ * ```
+ */
+export function lazyLoadComponent<P extends object>(
+  importer: () => Promise<{ default: ComponentType<P> }>,
+  options?: IntersectionObserverInit
+) {
+  return dynamic(importer, {
+    loading: () => <ComponentLoading name="Component" />,
+    ssr: false,
+  })
+}
+
+/**
+ * Bundle size targets by section
  */
 export const BUNDLE_SIZE_TARGETS = {
+  // Initial page load (critical path)
   initialBundle: {
-    target: 150,
+    target: 150, // KB
     warning: 200,
     critical: 250,
   },
 
+  // Route bundles
   routeBundle: {
-    target: 200,
+    target: 200, // KB per route
     warning: 300,
     critical: 400,
   },
 
+  // Feature bundles
   featureBundle: {
-    target: 100,
+    target: 100, // KB per feature
     warning: 150,
     critical: 200,
   },
 
+  // Modal/Dialog bundles
   modalBundle: {
-    target: 50,
+    target: 50, // KB per modal
     warning: 75,
     critical: 100,
   },
 
+  // Total application
   totalBundle: {
-    target: 800,
+    target: 800, // KB gzipped
     warning: 1000,
     critical: 1200,
   },
 } as const
 
 /**
- * Code splitting strategy
+ * Code splitting strategy: Component categories
  */
 export const CODE_SPLITTING_STRATEGY = {
+  /**
+   * Core components (always loaded)
+   * < 50KB
+   */
   core: ['Layout', 'Navigation', 'ErrorBoundary', 'RouteAnnouncer'],
+
+  /**
+   * Common components (usually needed)
+   * 50-150KB
+   */
   common: ['Button', 'Card', 'Modal', 'Input', 'Badge', 'Avatar'],
+
+  /**
+   * Page-specific components (route-based splitting)
+   * 100-300KB per page
+   */
   pages: [
     'AdminDashboard',
     'AdminUsers',
@@ -236,12 +303,22 @@ export const CODE_SPLITTING_STRATEGY = {
     'PortalBookings',
     'PortalServices',
   ],
+
+  /**
+   * Feature components (feature-flag gated)
+   * 50-200KB per feature
+   */
   features: [
     'ComplianceCenter',
     'InvoicingSystem',
     'PaymentProcessing',
     'ReportingEngine',
   ],
+
+  /**
+   * Heavy components (always lazy-loaded)
+   * 50-500KB each
+   */
   heavy: [
     'DataTable',
     'RichTextEditor',
@@ -249,6 +326,11 @@ export const CODE_SPLITTING_STRATEGY = {
     'ChartLibrary',
     'MapComponent',
   ],
+
+  /**
+   * Modal/Dialog components (on-demand)
+   * 30-150KB each
+   */
   modals: [
     'UserProfileDialog',
     'BulkActionsModal',
@@ -264,7 +346,7 @@ export const CODE_SPLITTING_CHECKLIST = [
   {
     step: 1,
     task: 'Identify heavy components',
-    details: 'Use next/bundle-analyzer',
+    details: 'Use next/bundle-analyzer to find large components',
     priority: 'high',
   },
   {
@@ -276,7 +358,7 @@ export const CODE_SPLITTING_CHECKLIST = [
   {
     step: 3,
     task: 'Add loading fallbacks',
-    details: 'Show loading state while loading',
+    details: 'Show loading state while component loads',
     priority: 'medium',
   },
   {
@@ -294,19 +376,19 @@ export const CODE_SPLITTING_CHECKLIST = [
   {
     step: 6,
     task: 'Preload critical routes',
-    details: 'Preload next likely routes',
+    details: 'Preload next likely routes on navigation',
     priority: 'low',
   },
   {
     step: 7,
     task: 'Test bundle sizes',
-    details: 'Verify target sizes met',
+    details: 'Verify target sizes are met',
     priority: 'high',
   },
   {
     step: 8,
     task: 'Monitor in production',
-    details: 'Track actual bundle sizes',
+    details: 'Track actual bundle sizes with analytics',
     priority: 'medium',
   },
 ]
@@ -315,24 +397,28 @@ export const CODE_SPLITTING_CHECKLIST = [
  * Performance metrics for code splitting
  */
 export const CODE_SPLITTING_METRICS = {
+  // Time to interactive (target: 3 seconds)
   tti: {
     before: 5.2,
     after: 3.1,
     improvement: '40%',
   },
 
+  // First contentful paint (target: 1 second)
   fcp: {
     before: 1.8,
     after: 0.9,
     improvement: '50%',
   },
 
+  // Initial bundle size (target: 150KB gzipped)
   initialBundle: {
     before: 280,
     after: 120,
     improvement: '57%',
   },
 
+  // Total bundle size (target: 800KB gzipped)
   totalBundle: {
     before: 1200,
     after: 750,

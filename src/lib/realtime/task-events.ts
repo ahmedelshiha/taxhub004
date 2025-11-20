@@ -203,7 +203,7 @@ export function clearTaskEventSubscribers(): void {
   eventSubscribers.clear()
 }
 
-export default {
+const TaskEvents = {
   subscribeToTaskEvents,
   publishTaskCreated,
   publishTaskUpdated,
@@ -212,3 +212,5 @@ export default {
   publishCommentAdded,
   clearTaskEventSubscribers,
 }
+
+export default TaskEvents

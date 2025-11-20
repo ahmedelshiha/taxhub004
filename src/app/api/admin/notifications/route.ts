@@ -5,13 +5,14 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
 import { prisma } from '@/lib/prisma'
 import { respond } from '@/lib/api-response'
 import { NotificationHub } from '@/lib/notifications/hub'
 import { z } from 'zod'
+import { withTenantContext } from '@/lib/api-wrapper'
+import { requireTenantContext } from '@/lib/tenant-context'
 
-// Verify admin access
+// Verify admin access helper
 async function requireAdmin(userId: string, tenantId: string) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -26,16 +27,11 @@ async function requireAdmin(userId: string, tenantId: string) {
 }
 
 // GET - List all notifications (admin view)
-export async function GET(request: NextRequest) {
+export const GET = withTenantContext(async (request: NextRequest) => {
   try {
-    const session = await getServerSession()
+    const ctx = requireTenantContext()
+    const { userId, tenantId } = ctx
 
-    if (!session?.user) {
-      return respond.unauthorized()
-    }
-
-    const userId = session.user.id
-    const tenantId = session.user.tenantId
     if (!userId || !tenantId) {
       return respond.unauthorized()
     }
@@ -86,19 +82,14 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching notifications:', error)
     return respond.serverError()
   }
-}
+})
 
 // POST - Send notification to user(s)
-export async function POST(request: NextRequest) {
+export const POST = withTenantContext(async (request: NextRequest) => {
   try {
-    const session = await getServerSession()
+    const ctx = requireTenantContext()
+    const { userId, tenantId } = ctx
 
-    if (!session?.user) {
-      return respond.unauthorized()
-    }
-
-    const userId = session.user.id
-    const tenantId = session.user.tenantId
     if (!userId || !tenantId) {
       return respond.unauthorized()
     }
@@ -157,4 +148,4 @@ export async function POST(request: NextRequest) {
     console.error('Error sending notifications:', error)
     return respond.serverError()
   }
-}
+})

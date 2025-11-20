@@ -4,12 +4,13 @@
  * PUT /api/notifications/preferences - Update user's notification preferences
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { respond } from '@/lib/api-response'
 import { NotificationHub } from '@/lib/notifications/hub'
 import { z } from 'zod'
+import { withTenantContext } from '@/lib/api-wrapper'
+import { requireTenantContext } from '@/lib/tenant-context'
 
 // Validation schema for preferences update
 const PreferencesSchema = z.object({
@@ -24,15 +25,11 @@ const PreferencesSchema = z.object({
 })
 
 // GET - Get notification preferences
-export async function GET(request: NextRequest) {
+export const GET = withTenantContext(async (request: NextRequest) => {
   try {
-    const session = await getServerSession()
+    const ctx = requireTenantContext()
+    const { userId } = ctx
 
-    if (!session?.user) {
-      return respond.unauthorized()
-    }
-
-    const userId = session.user.id
     if (!userId) {
       return respond.unauthorized()
     }
@@ -58,19 +55,14 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching notification preferences:', error)
     return respond.serverError()
   }
-}
+})
 
 // PUT - Update notification preferences
-export async function PUT(request: NextRequest) {
+export const PUT = withTenantContext(async (request: NextRequest) => {
   try {
-    const session = await getServerSession()
+    const ctx = requireTenantContext()
+    const { userId, tenantId } = ctx
 
-    if (!session?.user) {
-      return respond.unauthorized()
-    }
-
-    const userId = session.user.id
-    const tenantId = session.user.tenantId
     if (!userId || !tenantId) {
       return respond.unauthorized()
     }
@@ -107,4 +99,4 @@ export async function PUT(request: NextRequest) {
     console.error('Error updating notification preferences:', error)
     return respond.serverError()
   }
-}
+})

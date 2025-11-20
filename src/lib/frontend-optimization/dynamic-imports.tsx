@@ -1,5 +1,3 @@
-'use client'
-
 import { ComponentType, ReactNode } from 'react'
 import dynamic from 'next/dynamic'
 
@@ -15,7 +13,7 @@ export interface DynamicComponentConfig {
  * Default loading fallback
  */
 function DefaultLoadingFallback() {
-  return <div className="animate-pulse bg-gray-200 rounded h-12 w-12" />
+  return <div className="animate-pulse bg-gray-200 rounded h-12 w-12"></div>
 }
 
 /**

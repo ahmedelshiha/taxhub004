@@ -4,24 +4,20 @@
  * POST /api/approvals - Create new approval request (admin only)
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { ApprovalEngine } from '@/lib/workflows/approval-engine'
 import { respond } from '@/lib/api-response'
 import { z } from 'zod'
+import { withTenantContext } from '@/lib/api-wrapper'
+import { requireTenantContext } from '@/lib/tenant-context'
 
 // GET - List pending approvals
-export async function GET(request: NextRequest) {
+export const GET = withTenantContext(async (request: NextRequest) => {
   try {
-    const session = await getServerSession()
+    const ctx = requireTenantContext()
+    const { userId, tenantId } = ctx
 
-    if (!session?.user) {
-      return respond.unauthorized()
-    }
-
-    const userId = session.user.id
-    const tenantId = session.user.tenantId
     if (!userId || !tenantId) {
       return respond.unauthorized()
     }
@@ -70,20 +66,15 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching approvals:', error)
     return respond.serverError()
   }
-}
+})
 
 // POST - Create approval request (admin only)
-export async function POST(request: NextRequest) {
+export const POST = withTenantContext(async (request: NextRequest) => {
   try {
-    const session = await getServerSession()
+    const ctx = requireTenantContext()
+    const { userId, tenantId, role } = ctx
 
-    if (!session?.user) {
-      return respond.unauthorized()
-    }
-
-    const userId = session.user.id
-    const tenantId = session.user.tenantId
-    if (!userId || !tenantId || session.user.role !== 'ADMIN') {
+    if (!userId || !tenantId || role !== 'ADMIN') {
       return respond.forbidden('Admin access required')
     }
 
@@ -141,4 +132,4 @@ export async function POST(request: NextRequest) {
     console.error('Error creating approval:', error)
     return respond.serverError()
   }
-}
+})

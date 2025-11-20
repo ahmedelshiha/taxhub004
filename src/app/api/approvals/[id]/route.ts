@@ -6,26 +6,23 @@
  * POST /api/approvals/[id]/delegate - Delegate to another user
  */
 
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { ApprovalEngine } from '@/lib/workflows/approval-engine'
 import { respond } from '@/lib/api-response'
 import { z } from 'zod'
+import { withTenantContext } from '@/lib/api-wrapper'
+import { requireTenantContext } from '@/lib/tenant-context'
 
 // GET - Get approval details
-export async function GET(
+export const GET = withTenantContext(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+) => {
   try {
-    const session = await getServerSession()
+    const ctx = requireTenantContext()
+    const { tenantId } = ctx
 
-    if (!session?.user) {
-      return respond.unauthorized()
-    }
-
-    const tenantId = session.user.tenantId
     if (!tenantId) {
       return respond.unauthorized()
     }
@@ -60,22 +57,17 @@ export async function GET(
     console.error('Error fetching approval:', error)
     return respond.serverError()
   }
-}
+})
 
 // POST - Approve request
-export async function POST(
+export const POST = withTenantContext(async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+) => {
   try {
-    const session = await getServerSession()
+    const ctx = requireTenantContext()
+    const { userId, tenantId } = ctx
 
-    if (!session?.user) {
-      return respond.unauthorized()
-    }
-
-    const userId = session.user.id
-    const tenantId = session.user.tenantId
     if (!userId || !tenantId) {
       return respond.unauthorized()
     }
@@ -143,4 +135,4 @@ export async function POST(
     console.error('Error updating approval:', error)
     return respond.serverError()
   }
-}
+})
