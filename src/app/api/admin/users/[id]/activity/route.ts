@@ -1,129 +1,78 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { withTenantContext } from '@/lib/api-wrapper'
-import { requireTenantContext } from '@/lib/tenant-utils'
-import prisma from '@/lib/prisma'
-import { hasPermission, PERMISSIONS } from '@/lib/permissions'
+import { withAdminAuth } from '@/lib/api-wrapper'
 import { respond } from '@/lib/api-response'
+import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
 
-export const runtime = 'nodejs'
+const FilterSchema = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  offset: z.coerce.number().int().min(0).default(0),
+})
 
-// GET /api/admin/users/[userId]/activity?limit=50&offset=0
-export const GET = withTenantContext(async (request: NextRequest, { params }: { params: { userId: string } }) => {
-  try {
-    const ctx = requireTenantContext()
-    if (!ctx.userId) return respond.unauthorized()
-    if (!hasPermission(ctx.role, PERMISSIONS.ANALYTICS_VIEW)) return respond.forbidden('Forbidden')
+/**
+ * GET /api/admin/users/[id]/activity
+ * Get user's activity log (admin view)
+ */
+export const GET = withAdminAuth(
+  async (request, { user, tenantId }, { params }) => {
+    try {
+      const { id } = params
+      const { searchParams } = new URL(request.url)
+      const filters = FilterSchema.parse(Object.fromEntries(searchParams))
 
-    const { userId } = params
-    const tenantId = ctx.tenantId
+      // Verify user exists and belongs to tenant
+      const userExists = await prisma.user.findFirst({
+        where: { id, tenantId },
+      })
 
-    if (!userId) {
-      return NextResponse.json({ error: 'Missing userId' }, { status: 400 })
-    }
+      if (!userExists) {
+        return respond.notFound('User not found')
+      }
 
-    if (!tenantId) {
-      return respond.badRequest('Tenant context is required')
-    }
+      // Build query
+      const where: any = {
+        userId: id,
+        tenantId,
+      }
 
-    const { searchParams } = new URL(request.url)
-    const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 200)
-    const offset = Math.max(0, parseInt(searchParams.get('offset') || '0', 10))
+      // Get total count
+      const total = await prisma.auditLog.count({ where })
 
-    // Fetch audit logs related to this user
-    const [activityLogs, total] = await Promise.all([
-      prisma.auditLog.findMany({
-        where: {
-          tenantId,
-          OR: [
-            { userId }, // User performed the action
-            { metadata: { path: ['targetUserId'], equals: userId } } // Action was performed on this user
-          ]
-        },
+      // Get paginated results
+      const data = await prisma.auditLog.findMany({
+        where,
         select: {
           id: true,
           action: true,
-          resource: true,
-          metadata: true,
+          entity: true,
+          entityId: true,
+          changes: true,
+          details: true,
           createdAt: true,
-          user: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              image: true
-            }
-          }
         },
-        orderBy: { createdAt: 'desc' },
-        take: limit,
-        skip: offset
-      }),
-      prisma.auditLog.count({
-        where: {
-          tenantId,
-          OR: [
-            { userId },
-            { metadata: { path: ['targetUserId'], equals: userId } }
-          ]
-        }
+        orderBy: {
+          createdAt: 'desc',
+        },
+        skip: filters.offset,
+        take: filters.limit,
       })
-    ])
 
-    const formatted = activityLogs.map((log) => ({
-      id: log.id,
-      action: log.action,
-      resource: log.resource || '',
-      timestamp: log.createdAt instanceof Date ? log.createdAt.toISOString() : String(log.createdAt),
-      actor: log.user ? {
-        id: log.user.id,
-        name: log.user.name || 'Unknown',
-        email: log.user.email,
-        avatar: log.user.image
-      } : null,
-      details: log.metadata || {},
-      message: formatActivityMessage(log.action, log.resource || '', log.metadata)
-    }))
-
-    return NextResponse.json({
-      data: formatted,
-      pagination: {
-        offset,
-        limit,
-        total,
-        hasMore: offset + limit < total
+      return respond.ok({
+        data,
+        meta: {
+          total,
+          limit: filters.limit,
+          offset: filters.offset,
+          hasMore: filters.offset + filters.limit < total,
+        },
+      })
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return respond.badRequest('Invalid filters', error.errors)
       }
-    })
-  } catch (error) {
-    console.error('User activity API error:', error)
-    return NextResponse.json({ error: 'Failed to load activity' }, { status: 500 })
-  }
-})
-
-function formatActivityMessage(action: string, resource: string, metadata: any): string {
-  const actionMap: Record<string, string> = {
-    'CREATE': 'Created',
-    'UPDATE': 'Updated',
-    'DELETE': 'Deleted',
-    'LOGIN': 'Logged in',
-    'LOGOUT': 'Logged out',
-    'EXPORT': 'Exported',
-    'IMPORT': 'Imported',
-    'PERMISSION_GRANTED': 'Permission granted',
-    'PERMISSION_REVOKED': 'Permission revoked',
-    'PASSWORD_CHANGED': 'Changed password',
-    'EMAIL_VERIFIED': 'Verified email',
-    'ROLE_CHANGED': 'Role changed',
-    'STATUS_CHANGED': 'Status changed',
-    'MFA_ENABLED': 'Enabled MFA',
-    'MFA_DISABLED': 'Disabled MFA'
-  }
-
-  const actionText = actionMap[action] || action
-  const resourceText = resource || 'resource'
-
-  if (metadata?.details) {
-    return `${actionText} ${resourceText}: ${metadata.details}`
-  }
-
-  return `${actionText} ${resourceText}`
-}
+      console.error('Get user activity error:', error)
+      return respond.serverError()
+    }
+  },
+  { requireAuth: true }
+)
