@@ -85,12 +85,12 @@ export default function AdvancedAnalytics() {
   const compliance = stats?.compliance || {}
 
   const inProgress = useMemo(() => {
-    const row = byStatus.find((s: any) => String(s.status).toUpperCase() === 'IN_PROGRESS')
+    const row = byStatus.find((s: { status: string; _count?: { _all?: number } }) => String(s.status).toUpperCase() === 'IN_PROGRESS')
     return Number(row?._count?._all || 0)
   }, [byStatus])
 
   const criticalTasks = useMemo(() => {
-    const row = byPriority.find((p: any) => String(p.priority).toUpperCase() === 'CRITICAL')
+    const row = byPriority.find((p: { priority: string; _count?: { _all?: number } }) => String(p.priority).toUpperCase() === 'CRITICAL')
     return Number(row?._count?._all || 0)
   }, [byPriority])
 
@@ -102,10 +102,10 @@ export default function AdvancedAnalytics() {
   const avgTimeToCompliance = Number(compliance?.avgTimeToCompliance || 0)
 
   const statusChartData = useMemo(() => ({
-    labels: byStatus.map((s: any) => titleCase(s.status)),
+    labels: byStatus.map((s: { status: string; _count?: { _all?: number } }) => titleCase(s.status)),
     datasets: [{
       label: 'Tasks',
-      data: byStatus.map((s: any) => s?._count?._all ?? 0),
+      data: byStatus.map((s: { status: string; _count?: { _all?: number } }) => s?._count?._all ?? 0),
       backgroundColor: ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#14b8a6'],
       borderWidth: 0,
       hoverBorderWidth: 2,
@@ -114,10 +114,10 @@ export default function AdvancedAnalytics() {
   }), [byStatus])
 
   const priorityChartData = useMemo(() => ({
-    labels: byPriority.map((p: any) => titleCase(p.priority)),
+    labels: byPriority.map((p: { priority: string; _count?: { _all?: number } }) => titleCase(p.priority)),
     datasets: [{
       label: 'Tasks',
-      data: byPriority.map((p: any) => p?._count?._all ?? 0),
+      data: byPriority.map((p: { priority: string; _count?: { _all?: number } }) => p?._count?._all ?? 0),
       backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
       borderRadius: 8,
       borderSkipped: false

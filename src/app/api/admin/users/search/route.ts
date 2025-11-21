@@ -112,6 +112,7 @@ export const GET = withTenantContext(async (request: NextRequest) => {
       where.OR = [
         { name: { contains: searchTerm, mode: 'insensitive' } },
         { email: { contains: searchTerm, mode: 'insensitive' } },
+        { phone: { contains: searchTerm, mode: 'insensitive' } },
         { position: { contains: searchTerm, mode: 'insensitive' } },
         { department: { contains: searchTerm, mode: 'insensitive' } }
       ]

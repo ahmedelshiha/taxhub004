@@ -382,7 +382,7 @@ test.describe('Phase 4c: Bulk Operations Accessibility (WCAG 2.1 AA)', () => {
       await page.click('button:has-text("New Operation")')
       
       // Should not have JavaScript errors
-      let errors: string[] = []
+      const errors: string[] = []
       page.on('console', msg => {
         if (msg.type() === 'error') {
           errors.push(msg.text())

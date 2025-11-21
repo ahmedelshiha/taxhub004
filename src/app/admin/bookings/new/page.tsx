@@ -873,7 +873,6 @@ export default function ProfessionalNewBooking() {
         throw new Error(err.error || 'Failed to create booking')
       }
       const booking = await res.json()
-      console.log('Booking created:', booking)
       alert('Booking created successfully!')
       setCurrentStep(1)
       setFormData({

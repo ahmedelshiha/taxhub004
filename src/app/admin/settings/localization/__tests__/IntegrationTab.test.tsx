@@ -12,11 +12,11 @@ vi.mock('sonner', () => ({
 }))
 
 vi.mock('@/components/PermissionGate', () => ({
-  default: ({ children }: any) => <div>{children}</div>,
+  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
 
 vi.mock('@/components/admin/settings/FormField', () => ({
-  TextField: ({ label, value, onChange, placeholder }: any) => (
+  TextField: ({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) => (
     <input
       placeholder={placeholder}
       value={value}
@@ -25,7 +25,7 @@ vi.mock('@/components/admin/settings/FormField', () => ({
       type="text"
     />
   ),
-  Toggle: ({ value, onChange, label }: any) => (
+  Toggle: ({ value, onChange, label }: { value: boolean; onChange: (v: boolean) => void; label: string }) => (
     <input
       type="checkbox"
       checked={value}

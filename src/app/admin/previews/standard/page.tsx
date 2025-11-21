@@ -38,13 +38,13 @@ export default async function StandardPagePreview() {
       secondaryActions={[{ label: 'Export', onClick: () => alert('Export') }]}
       primaryTabs={primaryTabs}
       activePrimaryTab={'all'}
-      onPrimaryTabChange={(k) => console.log('primary tab:', k)}
+      onPrimaryTabChange={() => {}}
       secondaryTabs={secondaryTabs}
       activeSecondaryTab={'overview'}
-      onSecondaryTabChange={(k) => console.log('secondary tab:', k)}
+      onSecondaryTabChange={() => {}}
       filters={filters}
-      onFilterChange={(k, v) => console.log('filter', k, v)}
-      onSearch={(q) => console.log('search', q)}
+      onFilterChange={() => {}}
+      onSearch={() => {}}
       searchPlaceholder="Search items"
     >
       <div className="bg-white rounded-lg border border-gray-200 p-6">

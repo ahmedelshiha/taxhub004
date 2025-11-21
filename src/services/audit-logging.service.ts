@@ -1,4 +1,5 @@
 import prisma from '@/lib/prisma'
+import { logger } from '@/lib/logger'
 
 /**
  * Audit log action types
@@ -92,6 +93,41 @@ export interface AuditLogFilter {
  */
 export class AuditLoggingService {
   /**
+   * Format audit log data for Prisma, mapping legacy field names to schema fields
+   * Converts resourceType/resourceId to resource field format
+   * Moves details to metadata
+   */
+  static formatAuditData(data: any) {
+    const formatted: any = {
+      action: data.action,
+      tenantId: data.tenantId,
+      userId: data.userId,
+      ipAddress: data.ipAddress,
+      userAgent: data.userAgent,
+    }
+
+    // Map resource and resourceId to single resource field (format: "Type:id")
+    if (data.resourceType || data.resourceId) {
+      const type = data.resourceType || 'Unknown'
+      const id = data.resourceId || ''
+      formatted.resource = id ? `${type}:${id}` : type
+    } else if (data.resource) {
+      formatted.resource = data.resource
+    }
+
+    // Merge metadata and details, with details taking precedence
+    formatted.metadata = {
+      ...data.metadata,
+      ...data.details,
+      // Preserve legacy fields in metadata for compatibility
+      ...(data.resourceType && { resourceType: data.resourceType }),
+      ...(data.resourceId && { resourceId: data.resourceId }),
+    }
+
+    return formatted
+  }
+
+  /**
    * Log an audit event
    */
   static async logAuditEvent(entry: AuditLogEntryExtended): Promise<void> {
@@ -106,20 +142,33 @@ export class AuditLoggingService {
         changes: entry.changes,
       }
 
-      await prisma.auditLog.create({
-        data: {
-          action: entry.action,
-          userId: entry.userId,
-          tenantId: entry.tenantId,
-          resource: entry.resource,
-          ipAddress: entry.ipAddress,
-          userAgent: entry.userAgent,
-          metadata,
-        },
+      const data = this.formatAuditData({
+        action: entry.action,
+        userId: entry.userId,
+        tenantId: entry.tenantId,
+        resource: entry.resource,
+        ipAddress: entry.ipAddress,
+        userAgent: entry.userAgent,
+        metadata,
       })
+
+      await prisma.auditLog.create({ data })
     } catch (error) {
-      console.error('Failed to log audit event:', error)
+      logger.error('Failed to log audit event', {}, error instanceof Error ? error : new Error(String(error)))
       // Don't throw - audit logging failure shouldn't break the application
+    }
+  }
+
+  /**
+   * Create an audit log with automatic field mapping
+   * Handles both old (resourceType/resourceId) and new (resource) formats
+   */
+  static async createAuditLog(data: any): Promise<void> {
+    try {
+      const formatted = this.formatAuditData(data)
+      await prisma.auditLog.create({ data: formatted })
+    } catch (error) {
+      logger.error('Failed to create audit log', {}, error instanceof Error ? error : new Error(String(error)))
     }
   }
 

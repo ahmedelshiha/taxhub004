@@ -17,3 +17,7 @@ export { useModalRealtime } from './useModalRealtime'
 export type { EntityType } from './useModalRealtime'
 export { useOptimisticUpdate, useBatchOptimisticUpdate } from './useOptimisticUpdate'
 export type { OptimisticUpdateOptions } from './useOptimisticUpdate'
+
+// Phase 7: Advanced Query Builder Hooks
+export { useQueryBuilder } from './useQueryBuilder'
+export { useFilterTemplates } from './useFilterTemplates'

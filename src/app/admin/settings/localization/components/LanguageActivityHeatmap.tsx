@@ -24,7 +24,7 @@ type LanguageActivityResponse = {
   periods: HeatmapPeriod[]
   dateRange: { start: string; end: string }
   summary: { totalSessions: number; totalUsers: number; languagesTracked: number }
-  meta?: any
+  meta?: Record<string, unknown>
 }
 import { debounce } from '../utils/performance'
 
@@ -114,8 +114,8 @@ export const LanguageActivityHeatmap: React.FC = () => {
       } else {
         toast.error('Failed to load activity data')
       }
-    } catch (e: any) {
-      const message = e?.name === 'AbortError' ? 'Request timed out' : e?.message || 'Failed to load activity data'
+    } catch (e: unknown) {
+      const message = e instanceof Error && e.name === 'AbortError' ? 'Request timed out' : e instanceof Error ? e.message : 'Failed to load activity data'
       toast.error(message)
     } finally {
       setLoading(false)
@@ -247,7 +247,7 @@ export const LanguageActivityHeatmap: React.FC = () => {
             aria-label="Device filter"
           >
             <option value="all">All devices</option>
-            {(((data as any)?.meta?.availableDevices as any[]) || ['desktop','mobile','tablet','unknown']).map((d: any) => (
+            {((data?.meta as { availableDevices?: string[] } | undefined)?.availableDevices || ['desktop','mobile','tablet','unknown']).map((d: string) => (
               <option key={String(d)} value={String(d)}>{String(d)[0].toUpperCase() + String(d).slice(1)}</option>
             ))}
           </select>
@@ -259,7 +259,7 @@ export const LanguageActivityHeatmap: React.FC = () => {
             aria-label="Region filter"
           >
             <option value="all">All regions</option>
-            {(((data as any)?.meta?.availableRegions as any[]) || ['unknown']).map((r: any) => (
+            {((data?.meta as { availableRegions?: string[] } | undefined)?.availableRegions || ['unknown']).map((r: string) => (
               <option key={String(r)} value={String(r)}>{String(r).toUpperCase()}</option>
             ))}
           </select>

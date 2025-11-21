@@ -263,7 +263,7 @@ test.describe('Phase 4d: Accessibility (WCAG 2.1 AA)', () => {
       const firstInput = page.locator('input, select').first()
       await firstInput.focus()
 
-      let previousElement = await page.evaluate(() => (document.activeElement as HTMLElement)?.id)
+      const previousElement = await page.evaluate(() => (document.activeElement as HTMLElement)?.id)
 
       // Tab through multiple elements
       for (let i = 0; i < 3; i++) {

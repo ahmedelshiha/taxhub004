@@ -232,7 +232,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<BatchPerm
     const userRoleChanges: Record<string, string> = {}
 
     for (const targetUser of targetUsers) {
-      let newRole = roleChange?.to || targetUser.role
+      const newRole = roleChange?.to || targetUser.role
       let newPermissions = roleChange?.to
         ? getRolePermissions(newRole)
         : getRolePermissions(targetUser.role)

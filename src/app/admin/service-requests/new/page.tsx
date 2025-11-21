@@ -45,8 +45,8 @@ export default function AdminNewServiceRequestPage() {
           const resUsers = await apiFetch('/api/admin/users', { signal: abort.signal })
           const jsonUsers = await resUsers.json().catch(() => ({}))
           const users = Array.isArray(jsonUsers) ? jsonUsers : (jsonUsers?.users || [])
-          const onlyClients = users.filter((u: any) => String(u.role || '').toUpperCase() === 'CLIENT')
-          const mappedClients: ClientItem[] = onlyClients.map((u: any) => ({ id: u.id, name: u.name || u.email || 'Client', tier: (() => { const cnt = Number(u.totalBookings || 0); if (cnt >= 20) return 'Enterprise'; if (cnt >= 1) return 'SMB'; return 'Individual' })() }))
+          const onlyClients = users.filter((u: { role?: string; id: string; name?: string; email?: string; totalBookings?: number }) => String(u.role || '').toUpperCase() === 'CLIENT')
+          const mappedClients: ClientItem[] = onlyClients.map((u: { role?: string; id: string; name?: string; email?: string; totalBookings?: number }) => ({ id: u.id, name: u.name || u.email || 'Client', tier: (() => { const cnt = Number(u.totalBookings || 0); if (cnt >= 20) return 'Enterprise'; if (cnt >= 1) return 'SMB'; return 'Individual' })() }))
           setClients(mappedClients)
         } catch {}
         // Fetch services (public endpoint)
@@ -54,7 +54,7 @@ export default function AdminNewServiceRequestPage() {
           const resSvcs = await apiFetch('/api/services', { signal: abort.signal })
           const jsonSvcs = await resSvcs.json().catch(() => [])
           const list = Array.isArray(jsonSvcs) ? jsonSvcs : (jsonSvcs?.data || [])
-          const mapped: ServiceItem[] = list.map((s: any) => ({ id: s.id, name: s.name || 'Service', price: s.price ?? null, slug: s.slug, shortDesc: s.shortDesc, features: s.features }))
+          const mapped: ServiceItem[] = list.map((s: { id: string; name?: string; price?: number; slug?: string; shortDesc?: string; features?: string[] }) => ({ id: s.id, name: s.name || 'Service', price: s.price ?? null, slug: s.slug, shortDesc: s.shortDesc, features: s.features }))
           setServices(mapped)
         } catch {}
       } finally {
@@ -86,7 +86,7 @@ export default function AdminNewServiceRequestPage() {
     try {
       const serviceSnapshot = selectedService ? { id: selectedService.id, name: selectedService.name, price: selectedService.price ?? null, slug: selectedService.slug ?? null, shortDesc: selectedService.shortDesc ?? null } : undefined
       const deadlineIso = form.deadline ? new Date(form.deadline).toISOString() : undefined
-      const payload: any = {
+      const payload: Record<string, unknown> = {
         ...form,
         budgetMin: form.budgetMin ? Number(form.budgetMin) : undefined,
         budgetMax: form.budgetMax ? Number(form.budgetMax) : undefined,

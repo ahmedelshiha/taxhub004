@@ -9,10 +9,26 @@ import TaskReminders from '../widgets/TaskReminders'
 import TaskDependencies from '../widgets/TaskDependencies'
 import type { TaskPriority, TaskStatus, TaskCategory } from '@/lib/tasks/types'
 
+interface Task {
+  id?: string
+  title: string
+  description?: string
+  status?: TaskStatus
+  priority?: TaskPriority
+  category?: TaskCategory
+  assigneeId?: string
+  dueDate?: string
+  createdAt?: string
+  updatedAt?: string
+  watchers?: Array<{ id: string; name: string }>
+  reminders?: Array<{ id: string; type: string }>
+  dependencies?: string[]
+}
+
 interface Props {
   open: boolean
   onClose: () => void
-  task?: any
+  task?: Task
 }
 
 const modalVariants = {

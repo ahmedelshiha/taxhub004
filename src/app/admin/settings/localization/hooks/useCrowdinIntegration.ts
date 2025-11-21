@@ -43,8 +43,8 @@ export function useCrowdinIntegration() {
       if (!r.ok) throw new Error(d?.error || 'Connection test failed')
       setTestResult({ success: true, message: 'Connection successful!' })
       toast.success('Crowdin connection test passed')
-    } catch (e: any) {
-      const message = e?.message || 'Connection test failed'
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Connection test failed'
       setTestResult({ success: false, message })
       toast.error(message)
     } finally {
@@ -65,9 +65,10 @@ export function useCrowdinIntegration() {
       if (!r.ok) throw new Error(d?.error || 'Failed to save Crowdin integration')
       toast.success('Crowdin integration saved')
       await loadCrowdin()
-    } catch (e: any) {
-      setError(e?.message || 'Failed to save Crowdin integration')
-      toast.error(e?.message || 'Failed to save integration')
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Failed to save Crowdin integration'
+      setError(errorMessage)
+      toast.error(errorMessage)
       throw e
     } finally {
       setSaving(false)

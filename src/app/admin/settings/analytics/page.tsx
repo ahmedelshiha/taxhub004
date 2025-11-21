@@ -30,7 +30,7 @@ export default function AnalyticsSettingsPage(){
     if (r.ok) setSettings(await r.json())
   }
 
-  function onChange(section: string, key: string, value: any){ setPending(p => ({ ...p, [section]: { ...(p as any)[section], [key]: value } })) }
+  function onChange(section: string, key: string, value: unknown){ setPending(p => ({ ...p, [section]: { ...(p as Record<string, unknown>)[section], [key]: value } })) }
 
   async function onSave(){ if (!Object.keys(pending).length) return; setSaving(true); try { const r = await fetch('/api/admin/analytics-settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(pending) }); if (r.ok) { setSettings(await r.json()); setPending({}) } } finally { setSaving(false) } }
 

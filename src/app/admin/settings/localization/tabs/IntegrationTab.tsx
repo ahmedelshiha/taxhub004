@@ -74,7 +74,7 @@ export const IntegrationTab: React.FC = () => {
 
   async function loadCrowdinIntegration() {
     try {
-      const d = await cachedFetch<{ data: any }>('/api/admin/crowdin-integration', {
+      const d = await cachedFetch<{ data: { projectId?: string; apiTokenMasked?: string; autoSyncDaily?: boolean; syncOnDeploy?: boolean; createPrs?: boolean } }>('/api/admin/crowdin-integration', {
         ttlMs: 5 * 60 * 1000, // 5 minute cache
       })
       if (d.data) {
@@ -86,7 +86,7 @@ export const IntegrationTab: React.FC = () => {
           createPrs: d.data.createPrs ?? true,
         })
       }
-    } catch (e) {
+    } catch (e: unknown) {
       console.error('Failed to load Crowdin integration:', e)
     }
   }

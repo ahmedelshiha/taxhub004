@@ -13,11 +13,28 @@ vi.mock('sonner', () => ({
 }))
 
 vi.mock('@/components/PermissionGate', () => ({
-  default: ({ children }: any) => <div>{children}</div>,
+  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
 
+interface SelectOption {
+  value: string
+  label: string
+}
+
+interface SelectFieldProps {
+  label: string
+  value: string
+  onChange: (v: string) => void
+  options: SelectOption[]
+}
+
+interface ToggleProps {
+  value: boolean
+  onChange: (v: boolean) => void
+}
+
 vi.mock('@/components/admin/settings/FormField', () => ({
-  TextField: ({ label, value, onChange, placeholder }: any) => (
+  TextField: ({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) => (
     <input
       placeholder={placeholder}
       value={value}
@@ -25,16 +42,16 @@ vi.mock('@/components/admin/settings/FormField', () => ({
       aria-label={label}
     />
   ),
-  SelectField: ({ label, value, onChange, options }: any) => (
+  SelectField: ({ label, value, onChange, options }: SelectFieldProps) => (
     <select value={value} onChange={e => onChange(e.target.value)} aria-label={label}>
-      {options.map((opt: any) => (
+      {options.map((opt: SelectOption) => (
         <option key={opt.value} value={opt.value}>
           {opt.label}
         </option>
       ))}
     </select>
   ),
-  Toggle: ({ value, onChange }: any) => (
+  Toggle: ({ value, onChange }: ToggleProps) => (
     <input type="checkbox" checked={value} onChange={e => onChange(e.target.checked)} />
   ),
 }))
@@ -44,7 +61,7 @@ const mutateMock = vi.fn(() => Promise.resolve({ ok: true, data: {} }))
 vi.mock('../hooks/useFormMutation', () => ({
   useFormMutation: () => ({
     saving: false,
-    mutate: (...args: any[]) => mutateMock(...args),
+    mutate: (...args: unknown[]) => mutateMock(...args),
   }),
 }))
 

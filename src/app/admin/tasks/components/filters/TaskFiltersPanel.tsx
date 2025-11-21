@@ -7,10 +7,17 @@ import { Input } from '@/components/ui/input'
 import { useFilterContext } from '../providers/FilterProvider'
 import { apiFetch } from '@/lib/api'
 
+interface User {
+  id: string
+  name: string
+  email: string
+  role: string
+}
+
 export default function TaskFiltersPanel() {
   const { filters, setFilters, resetFilters } = useFilterContext()
-  const [users, setUsers] = useState<any[]>([])
-  const [clients, setClients] = useState<any[]>([])
+  const [users, setUsers] = useState<User[]>([])
+  const [clients, setClients] = useState<User[]>([])
 
   useEffect(() => {
     const ac = new AbortController()
@@ -19,14 +26,14 @@ export default function TaskFiltersPanel() {
         const r = await apiFetch('/api/admin/users', { signal: ac.signal })
         const data = await r.json().catch(() => ({}))
         const list = Array.isArray(data?.users) ? data.users : (Array.isArray(data) ? data : [])
-        setUsers(list.filter((u: any) => (u.role || '').toUpperCase() !== 'CLIENT'))
-        setClients(list.filter((u: any) => (u.role || '').toUpperCase() === 'CLIENT'))
+        setUsers(list.filter((u: User) => (u.role || '').toUpperCase() !== 'CLIENT'))
+        setClients(list.filter((u: User) => (u.role || '').toUpperCase() === 'CLIENT'))
       } catch {}
     })()
     return () => ac.abort()
   }, [])
 
-  const update = (key: string, value: any) => setFilters((prev: any) => ({ ...prev, [key]: value }))
+  const update = (key: string, value: unknown) => setFilters((prev: Record<string, unknown>) => ({ ...prev, [key]: value }))
 
   return (
     <Card className="p-4">

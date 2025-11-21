@@ -29,7 +29,7 @@ export interface UserItem {
   id: string
   name: string | null
   email: string
-  role: 'ADMIN' | 'TEAM_MEMBER' | 'TEAM_LEAD' | 'STAFF' | 'CLIENT'
+  role: 'ADMIN' | 'TEAM_MEMBER' | 'TEAM_LEAD' | 'STAFF' | 'CLIENT' | 'VIEWER'
   createdAt: string
   lastLoginAt?: string
   isActive?: boolean
@@ -154,17 +154,6 @@ export function UserDataContextProvider({
 
   // Use unified user service
   const { fetchUsers, invalidateCache } = useUnifiedUserService()
-
-  // Subscribe to real-time user management events
-  const { isConnected: realtimeIsConnected } = useUserManagementRealtime({
-    debounceMs: 500,
-    autoRefresh: true
-  })
-
-  // Update real-time connection state
-  useEffect(() => {
-    setRealtimeConnected(realtimeIsConnected)
-  }, [realtimeIsConnected])
 
   // Data operations
   const refreshUsers = useCallback(async () => {

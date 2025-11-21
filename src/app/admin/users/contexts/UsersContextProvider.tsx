@@ -1,13 +1,12 @@
 'use client'
 
-'use client'
-
 import React, { createContext, useContext, useMemo, ReactNode } from 'react'
 import { UserDataContextProvider, useUserDataContext, UserStats, UserItem, HealthLog } from './UserDataContext'
 import { UserUIContextProvider, useUserUIContext } from './UserUIContext'
 import { UserFilterContextProvider, useUserFilterContext } from './UserFilterContext'
+import { useUserManagementRealtime } from '../hooks/useUserManagementRealtime'
 
-type TabType = 'overview' | 'details' | 'activity' | 'settings'
+type TabType = 'overview' | 'details' | 'permissions' | 'activity' | 'settings'
 type StatusAction = 'activate' | 'deactivate' | 'suspend'
 
 /**
@@ -102,6 +101,14 @@ function UsersContextComposer({ children }: { children: ReactNode }) {
   const dataContext = useUserDataContext()
   const uiContext = useUserUIContext()
   const filterContext = useUserFilterContext()
+
+  // Set up real-time user management synchronization
+  // Safe to call here since we're inside UserDataContextProvider
+  useUserManagementRealtime({
+    debounceMs: 500,
+    autoRefresh: true,
+    refreshUsers: dataContext.refreshUsers
+  })
 
   // Compute filtered users from data and filter contexts
   const filteredUsers = useMemo(() => {

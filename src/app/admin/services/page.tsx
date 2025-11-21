@@ -61,7 +61,7 @@ export default function ServicesAdminPage() {
   const perms = usePermissions()
 
   const query = buildQuery({ search: search || undefined, status: filters.status && filters.status !== 'all' ? filters.status : undefined, category: filters.category, limit: String(pageSize), offset: String((page-1)*pageSize), sortBy, sortOrder })
-  const { data, isLoading, mutate } = useSWR<{ services: ServiceRow[]; total: number; analytics: any }>(`/api/admin/services${query}`, fetcher)
+  const { data, isLoading, mutate } = useSWR<{ services: ServiceRow[]; total: number; analytics: Record<string, unknown> }>(`/api/admin/services${query}`, fetcher)
   const items = data?.services ?? []
   const total = data?.total ?? items.length
 

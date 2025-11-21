@@ -27,10 +27,10 @@ export function useFormValidation() {
     return errors
   }
 
-  function validateOrgSettings(orgSettings: any, languages: any[]) {
+  function validateOrgSettings(orgSettings: { defaultLanguage: string; fallbackLanguage: string }, languages: Array<{ code: string; enabled: boolean }>) {
     const errors: { general?: string } = {}
-    const defaultLang = languages.find((l: any) => l.code === orgSettings.defaultLanguage)
-    const fallbackLang = languages.find((l: any) => l.code === orgSettings.fallbackLanguage)
+    const defaultLang = languages.find((l: { code: string; enabled: boolean }) => l.code === orgSettings.defaultLanguage)
+    const fallbackLang = languages.find((l: { code: string; enabled: boolean }) => l.code === orgSettings.fallbackLanguage)
 
     if (!defaultLang || !defaultLang.enabled) {
       errors.general = 'Default language must be an enabled language'
@@ -43,7 +43,7 @@ export function useFormValidation() {
     return errors
   }
 
-  function validateFormat(format: any) {
+  function validateFormat(format: { dateFormat?: string; timeFormat?: string; currencyCode?: string; currencySymbol?: string; numberFormat?: string } | null) {
     const newErrors: Record<string, string> = {}
 
     if (!format) {

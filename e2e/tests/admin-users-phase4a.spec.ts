@@ -429,7 +429,7 @@ test.describe('Phase 4a: Enterprise Users Dashboard', () => {
   test.describe('Data Loading', () => {
     test('should load users data without errors', async ({ page }) => {
       // Check browser console for errors
-      let consoleErrors: string[] = []
+      const consoleErrors: string[] = []
       
       page.on('console', (msg) => {
         if (msg.type() === 'error') {

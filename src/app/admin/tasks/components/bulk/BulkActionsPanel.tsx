@@ -5,7 +5,7 @@ import SharedBulkActionsPanel from '@/components/common/bulk/BulkActionsPanel'
 import { apiFetch } from '@/lib/api'
 
 export default function BulkActionsPanel({ selectedIds, onClear, onRefresh }: { selectedIds: string[]; onClear: () => void; onRefresh: () => void }) {
-  const bulkAction = async (action: string, updates?: any) => {
+  const bulkAction = async (action: string, updates?: Record<string, unknown>) => {
     if (!selectedIds.length) return
     if (!confirm(`Run '${action}' for ${selectedIds.length} tasks?`)) return
     const res = await apiFetch('/api/admin/tasks/bulk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action, taskIds: selectedIds, updates }) })

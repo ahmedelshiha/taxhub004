@@ -49,10 +49,10 @@ export default async function ListPagePreview() {
       primaryAction={{ label: 'New', onClick: () => alert('New') }}
       primaryTabs={primaryTabs}
       activePrimaryTab={'all'}
-      onPrimaryTabChange={(k) => console.log('tab', k)}
+      onPrimaryTabChange={() => {}}
       filters={filters}
-      onFilterChange={(k, v) => console.log('filter', k, v)}
-      onSearch={(q) => console.log('search', q)}
+      onFilterChange={() => {}}
+      onSearch={() => {}}
       columns={columns}
       rows={rows}
       actions={actions}

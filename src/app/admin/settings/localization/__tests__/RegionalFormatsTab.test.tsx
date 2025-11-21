@@ -11,12 +11,34 @@ vi.mock('sonner', () => ({
   },
 }))
 
+interface PermissionGateProps {
+  children: React.ReactNode
+}
+
+interface TextFieldProps {
+  label: string
+  value: string
+  onChange: (v: string) => void
+}
+
+interface SelectOption {
+  value: string
+  label: string
+}
+
+interface SelectFieldProps {
+  label: string
+  value: string
+  onChange: (v: string) => void
+  options: SelectOption[]
+}
+
 vi.mock('@/components/PermissionGate', () => ({
-  default: ({ children }: any) => <div>{children}</div>,
+  default: ({ children }: PermissionGateProps) => <div>{children}</div>,
 }))
 
 vi.mock('@/components/admin/settings/FormField', () => ({
-  TextField: ({ label, value, onChange }: any) => (
+  TextField: ({ label, value, onChange }: TextFieldProps) => (
     <input
       value={value}
       onChange={e => onChange(e.target.value)}
@@ -24,9 +46,9 @@ vi.mock('@/components/admin/settings/FormField', () => ({
       type="text"
     />
   ),
-  SelectField: ({ label, value, onChange, options }: any) => (
+  SelectField: ({ label, value, onChange, options }: SelectFieldProps) => (
     <select value={value} onChange={e => onChange(e.target.value)} aria-label={label}>
-      {options.map((opt: any) => (
+      {options.map((opt: SelectOption) => (
         <option key={opt.value} value={opt.value}>
           {opt.label}
         </option>
@@ -39,7 +61,7 @@ let mutateMock = vi.fn(() => Promise.resolve({ ok: true, data: {} }))
 vi.mock('../hooks/useFormMutation', () => ({
   useFormMutation: () => ({
     saving: false,
-    mutate: (...args: any[]) => mutateMock(...args),
+    mutate: (...args: unknown[]) => mutateMock(...args),
   }),
 }))
 

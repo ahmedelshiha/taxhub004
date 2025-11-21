@@ -157,7 +157,7 @@ test.describe('Phase 4b Workflows - Accessibility (WCAG 2.1 AA)', () => {
       const results = await page.evaluate(() => {
         // Simple contrast check - in real scenario would use axe results
         const elements = document.querySelectorAll('*')
-        let contrastIssues = 0
+        const contrastIssues = 0
 
         elements.forEach((el) => {
           const style = window.getComputedStyle(el)

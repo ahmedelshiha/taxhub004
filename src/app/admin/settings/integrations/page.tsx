@@ -22,8 +22,8 @@ export default function IntegrationHubPage(){
     try { const res = await fetch('/api/admin/integration-hub', { cache: 'no-store' }); const data = await res.json(); setSettings(data.settings || {}) } finally { setLoading(false) }
   }
 
-  function onChange(section: string, field: string, value: any){
-    setPending((prev: any) => ({ ...prev, [section]: { ...(prev[section]||{}), [field]: value } }))
+  function onChange(section: string, field: string, value: unknown){
+    setPending((prev: Record<string, unknown>) => ({ ...prev, [section]: { ...(prev[section] as Record<string, unknown>)||{}, [field]: value } }))
   }
 
   async function onSave(){

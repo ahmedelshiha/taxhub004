@@ -4,13 +4,12 @@ import React, { useState, useCallback } from 'react'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
 } from '@/components/ui/dialog'
 import { UserForm } from './UserForm'
 import { UserCreate, UserEdit } from '@/schemas/users'
 import { toast } from 'sonner'
+import { X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface CreateUserModalProps {
   /**
@@ -70,7 +69,7 @@ export const CreateUserModal = React.forwardRef<HTMLDivElement, CreateUserModalP
     const defaultTitle = mode === 'create' ? 'Create New User' : 'Edit User'
     const defaultDescription = mode === 'create'
       ? 'Add a new user to your organization'
-      : 'Update user information'
+      : 'Update user information and settings'
 
     const handleSubmit = useCallback(
       async (data: UserCreate | UserEdit) => {
@@ -117,20 +116,48 @@ export const CreateUserModal = React.forwardRef<HTMLDivElement, CreateUserModalP
 
     return (
       <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" ref={ref}>
-          <DialogHeader>
-            <DialogTitle>{title || defaultTitle}</DialogTitle>
-            <DialogDescription>{description || defaultDescription}</DialogDescription>
-          </DialogHeader>
+        <DialogContent
+          className="fixed inset-0 w-screen h-screen max-w-none max-h-none p-0 border-0 bg-white rounded-none flex flex-col"
+          showCloseButton={false}
+          ref={ref}
+        >
+          {/* Enterprise Header */}
+          <div className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
+            <div className="h-20 flex items-center justify-between px-6 md:px-8">
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-green-500 to-green-700 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                  +
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-slate-900">{title || defaultTitle}</h1>
+                  <p className="text-sm text-slate-600 mt-1">{description || defaultDescription}</p>
+                </div>
+              </div>
 
-          <UserForm
-            mode={mode}
-            initialData={initialData}
-            onSubmit={handleSubmit}
-            onCancel={onClose}
-            isLoading={isSubmitting}
-            showPasswordGeneration={showPasswordGeneration && mode === 'create'}
-          />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleOpenChange(false)}
+                className="text-slate-600 hover:text-slate-900 hover:bg-slate-200 flex-shrink-0"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Main Content Area */}
+          <div className="flex-1 overflow-y-auto bg-white">
+            <div className="max-w-3xl mx-auto px-6 md:px-8 py-8">
+              <UserForm
+                mode={mode}
+                initialData={initialData}
+                onSubmit={handleSubmit}
+                onCancel={onClose}
+                isLoading={isSubmitting}
+                showPasswordGeneration={showPasswordGeneration && mode === 'create'}
+              />
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     )
