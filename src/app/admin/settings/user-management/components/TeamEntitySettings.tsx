@@ -119,7 +119,7 @@ export function TeamEntitySettings({ isLoading = false, isSaving = false, onUpda
               </Button>
             </div>
             <div className="space-y-3">
-              {units.map((u: any, i: number) => (
+              {units.map((u: { name?: string; leadUserId?: string }, i: number) => (
                 <div key={i} className="bg-gray-50 border border-gray-200 rounded-lg p-3 grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
                   <TextField
                     label="Name"
@@ -147,7 +147,7 @@ export function TeamEntitySettings({ isLoading = false, isSaving = false, onUpda
                     variant="ghost"
                     className="text-red-600 hover:bg-red-50"
                     onClick={() => {
-                      const next = units.filter((_: any, idx: number) => idx !== i)
+                      const next = units.filter((_: { name?: string; leadUserId?: string }, idx: number) => idx !== i)
                       onChange('structure', 'orgUnits', next)
                     }}
                   >

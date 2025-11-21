@@ -33,7 +33,7 @@ export const TranslationPriorityPanel: React.FC = () => {
       )}
 
       <div className="space-y-3">
-        {priorities.map((p: any) => (
+        {priorities.map((p: { id: string; key: string; languageCode?: string; priority: string; status: string; updatedAt: string }) => (
           <div key={p.id} className="flex items-center justify-between p-3 border rounded">
             <div>
               <div className="flex items-center gap-2">
