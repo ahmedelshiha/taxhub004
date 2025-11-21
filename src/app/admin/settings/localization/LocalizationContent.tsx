@@ -1282,13 +1282,13 @@ export default function LocalizationContent() {
                           <div style={{ width: '300px', height: '300px' }}>
                             <Doughnut
                               data={{
-                                labels: analyticsData.distribution.map((d: any) => {
+                                labels: analyticsData.distribution.map((d: { language: string; count: number }) => {
                                   const lang = languages.find(l => l.code === d.language)
                                   return `${lang?.name || d.language} (${d.count})`
                                 }),
                                 datasets: [
                                   {
-                                    data: analyticsData.distribution.map((d: any) => d.count),
+                                    data: analyticsData.distribution.map((d: { language: string; count: number }) => d.count),
                                     backgroundColor: [
                                       '#3b82f6',
                                       '#ef4444',
@@ -1316,7 +1316,7 @@ export default function LocalizationContent() {
                         </div>
 
                         <div className="space-y-3">
-                          {analyticsData.distribution.map((item: any, idx: number) => (
+                          {analyticsData.distribution.map((item: { language: string; count: number }, idx: number) => (
                             <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
                               <div className="flex items-center gap-3">
                                 <div
