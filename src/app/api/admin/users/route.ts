@@ -28,13 +28,18 @@ const UserCreateSchema = z.object({
  * List all users with filtering and pagination
  */
 export const GET = withAdminAuth(
-  async (request, { user, tenantId }) => {
+  async (request) => {
     try {
+      const ctx = tenantContext()
+      if (!ctx?.tenantId) {
+        return respond.unauthorized('Tenant context not found')
+      }
+
       const { searchParams } = new URL(request.url)
       const filters = UserListFilterSchema.parse(Object.fromEntries(searchParams))
 
       // Build query
-      const where: any = { tenantId }
+      const where: any = { tenantId: ctx.tenantId }
 
       if (filters.role) {
         where.role = filters.role
