@@ -9,8 +9,9 @@ import { redirect } from 'next/navigation'
  * GET /api/documents/[id]/download
  * Download document with permission check and audit logging
  */
-export const GET = withTenantAuth(async (request, { tenantId, user }, { params }) => {
+export const GET = withTenantAuth(async (request: any, { params }: any) => {
   try {
+    const { userId, tenantId, userRole } = request as any
     const document = await prisma.attachment.findFirst({
       where: {
         id: params.id,
@@ -31,7 +32,7 @@ export const GET = withTenantAuth(async (request, { tenantId, user }, { params }
     }
 
     // Authorization check
-    if (user.role !== 'ADMIN' && document.uploaderId !== user.id) {
+    if (userRole !== 'ADMIN' && document.uploaderId !== userId) {
       return respond.forbidden('You do not have access to this document')
     }
 
@@ -58,33 +59,17 @@ export const GET = withTenantAuth(async (request, { tenantId, user }, { params }
       data: {
         tenantId,
         action: 'documents:download',
-        userId: user.id,
-        resourceType: 'Document',
-        resourceId: document.id,
-        details: {
+        userId,
+        resource: 'Document',
+        metadata: {
+          documentId: document.id,
           documentName: document.name,
           documentSize: document.size,
-          downloadedBy: user.id,
+          downloadedBy: userId,
         },
       },
     }).catch(() => {})
 
-    // Create download record for analytics
-    await prisma.documentAuditLog.create({
-      data: {
-        attachmentId: document.id,
-        action: 'download',
-        performedBy: user.id,
-        performedAt: new Date(),
-        tenantId,
-        details: {
-          userAgent: request.headers.get('user-agent'),
-          ipAddress: request.headers.get('x-forwarded-for') || 'unknown',
-        },
-      },
-    }).catch(() => {})
-
-    // Return download response with redirect to signed URL
     return Response.redirect(document.url, 302)
   } catch (error) {
     console.error('Download document error:', error)
