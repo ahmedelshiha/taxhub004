@@ -1,9 +1,9 @@
 'use server'
 
 import { withTenantAuth } from '@/lib/auth-middleware'
+import { NextResponse } from 'next/server'
 import { respond } from '@/lib/api-response'
 import prisma from '@/lib/prisma'
-import { redirect } from 'next/navigation'
 
 /**
  * GET /api/documents/[id]/download
@@ -70,7 +70,7 @@ export const GET = withTenantAuth(async (request: any, { params }: any) => {
       },
     }).catch(() => {})
 
-    return Response.redirect(document.url, 302)
+    return NextResponse.redirect(document.url, 302)
   } catch (error) {
     console.error('Download document error:', error)
     return respond.serverError()
