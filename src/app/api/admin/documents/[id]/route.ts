@@ -9,7 +9,9 @@ import { z } from 'zod'
  * GET /api/admin/documents/[id]
  * Get document details (admin view with all fields)
  */
-export const GET = withAdminAuth(async (request, { tenantId, user }, { params }) => {
+export const GET = withAdminAuth(async (request, context) => {
+  const tenantId = (request as any).tenantId
+  const params = context?.params || {}
   try {
     const document = await prisma.attachment.findFirst({
       where: {
@@ -92,7 +94,10 @@ export const GET = withAdminAuth(async (request, { tenantId, user }, { params })
  * DELETE /api/admin/documents/[id]
  * Force delete document (admin only, hard delete)
  */
-export const DELETE = withAdminAuth(async (request, { tenantId, user }, { params }) => {
+export const DELETE = withAdminAuth(async (request, context) => {
+  const tenantId = (request as any).tenantId
+  const userId = (request as any).userId
+  const params = context?.params || {}
   try {
     const document = await prisma.attachment.findFirst({
       where: {
@@ -110,13 +115,13 @@ export const DELETE = withAdminAuth(async (request, { tenantId, user }, { params
       data: {
         tenantId,
         action: 'admin:documents_delete',
-        userId: user.id,
-        resourceType: 'Document',
+        userId,
+        resource: 'Document',
         resourceId: document.id,
         details: {
           documentName: document.name,
           documentSize: document.size,
-          deletedBy: user.id,
+          deletedBy: userId,
         },
       },
     }).catch(() => {})
