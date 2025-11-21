@@ -35,7 +35,11 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
 
   const { data, error, isLoading } = useSWR<NotificationListResponse>(
     url,
-    (url) => apiFetch(url) as Promise<NotificationListResponse>,
+    async (url) => {
+      const response = await apiFetch(url)
+      if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`)
+      return response.json()
+    },
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
@@ -124,7 +128,11 @@ export function useNotifications(options: UseNotificationsOptions = {}) {
 export function useNotificationPreferences() {
   const { data, error, isLoading, mutate: refresh } = useSWR(
     '/api/notifications/preferences',
-    apiFetch,
+    async (url) => {
+      const response = await apiFetch(url)
+      if (!response.ok) throw new Error(`${response.status}: ${response.statusText}`)
+      return response.json()
+    },
     {
       revalidateOnFocus: false,
     }
