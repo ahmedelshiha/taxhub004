@@ -1,7 +1,7 @@
 'use server'
 
 import { NextRequest } from 'next/server'
-import { withTenantAuth } from '@/lib/auth-middleware'
+import { withTenantAuth, type AuthenticatedRequest } from '@/lib/auth-middleware'
 import { respond } from '@/lib/api-response'
 import prisma from '@/lib/prisma'
 import { z } from 'zod'
@@ -10,8 +10,14 @@ import { z } from 'zod'
  * GET /api/documents/[id]
  * Get document details
  */
-export const GET = withTenantAuth(async (request, { tenantId, user }, { params }) => {
+export const GET = withTenantAuth(async (request, context) => {
   try {
+    const authReq = request as AuthenticatedRequest
+    const tenantId = authReq.tenantId
+    const userId = authReq.userId
+    const userRole = authReq.userRole
+    const params = (context as any)?.params || {}
+
     const document = await prisma.attachment.findFirst({
       where: {
         id: params.id,
