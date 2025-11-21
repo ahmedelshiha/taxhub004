@@ -67,9 +67,9 @@ export const GET = withTenantContext(
       // Filter by assignee
       if (filters.assigneeId) {
         where.assigneeId = filters.assigneeId
-      } else if (!user.isAdmin) {
+      } else if (ctx.role !== 'SUPER_ADMIN' && !ctx.tenantRole?.includes('ADMIN')) {
         // Non-admin users only see their own tasks
-        where.OR = [{ assigneeId: user.id }, { assigneeId: null }]
+        where.OR = [{ assigneeId: userId_ }, { assigneeId: null }]
       }
 
       // Search in title and description
