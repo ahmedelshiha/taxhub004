@@ -118,8 +118,8 @@ export const GET = withTenantAuth(async (request, context) => {
       data: {
         tenantId,
         action: 'documents:view',
-        userId: user.id,
-        resourceType: 'Document',
+        userId,
+        resource: 'Document',
         resourceId: document.id,
       },
     }).catch(() => {})
