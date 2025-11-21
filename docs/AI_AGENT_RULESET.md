@@ -434,9 +434,106 @@ It must rely on this ruleset.
 
 ---
 
+# 15. Phase 1 Execution Rules (API Handler Signatures)
+
+## Session Analysis & Findings
+
+**Session Date**: Current TypeScript Error Fix Session
+**Finding Type**: CRITICAL - Root cause of 40+ errors identified
+
+### The Problem (Context)
+
+During systematic error analysis, discovered that 40+ API routes have handlers declaring **3 parameters** when middleware only provides **2 parameters**:
+
+```ts
+// Current broken pattern in 40+ files:
+async (request, { tenantId, user }, { params })  // Expects 3, gets 2
+```
+
+### Root Cause Analysis
+
+1. **Middleware Implementation** (`src/lib/api-wrapper.ts:300`):
+   - Calls: `handler(request, routeContext)` where `routeContext = { params }`
+   - Provides exactly **2 arguments** to handler
+
+2. **Handler Expectations** (40+ files):
+   - Declared to accept 3 arguments: `request`, `{ tenantId, user }`, `{ params }`
+   - TypeScript error: "Expected 3 or more arguments, got 2"
+
+3. **Missing Tenant Context**:
+   - Handlers need `tenantId` and `user` but aren't receiving them as parameters
+   - Solution: Call `requireTenantContext()` inside handler body
+
+### The Fix (Phase 1 Strategy)
+
+**Step 1**: Update handler signature (remove middle parameter)
+```ts
+// FROM:
+export const GET = withTenantContext(async (request, { tenantId, user }, { params }) => {
+
+// TO:
+export const GET = withTenantContext(async (request, { params }) => {
+```
+
+**Step 2**: Add tenant context retrieval inside handler
+```ts
+export const GET = withTenantContext(async (request, { params }) => {
+  const { user, tenantId } = requireTenantContext()
+  const { id } = await params
+
+  // Now handler has access to user, tenantId, and id
+})
+```
+
+**Step 3**: Verify no other changes needed
+- Middleware stays unchanged
+- Response patterns stay unchanged
+- Authorization checks stay unchanged
+- Only signature and context retrieval change
+
+### Phase 1 Execution Order
+
+1. Find all files with 3-parameter handlers
+2. Update signatures to 2 parameters
+3. Add `requireTenantContext()` call at start of each handler
+4. Verify no variable references change
+5. Run type check
+6. Move to Phase 2
+
+### Files to Fix in Phase 1 (40+ instances across 10+ files):
+
+**Document APIs** (6+ instances):
+- `src/app/api/documents/[id]/analyze/route.ts`
+- `src/app/api/documents/[id]/download/route.ts`
+- `src/app/api/documents/[id]/sign/route.ts`
+- `src/app/api/documents/[id]/versions/route.ts`
+
+**Task APIs** (6+ instances):
+- `src/app/api/tasks/[id]/comments/[commentId]/route.ts`
+- `src/app/api/tasks/route.ts`
+
+**User APIs** (4+ instances):
+- `src/app/api/users/[id]/route.ts`
+- `src/app/api/users/team/route.ts`
+- `src/app/api/users/me/route.ts`
+
+**Other APIs** (10+ more instances in services, approvals, notifications, etc.)
+
+### Key Learning for Future Sessions
+
+- **Always check middleware implementation** before assuming handler signatures
+- **Middleware call pattern matters** - review how middleware actually invokes handlers
+- **Context retrieval methods vary** - some pass as params, some require explicit calls
+- **40+ handlers are affected** - indicates systematic pattern, not isolated issues
+
+---
+
 # End of Comprehensive Ruleset
 
-**Changes from v2.1 → v2.2:**
+**Changes from v2.2 → v2.3 (Current Session):**
 
-* Added explicit **`withTenantContext` validation instructions** for AI agent.
-* Functionality and all previous rules remain unchanged.
+* **CRITICAL FIX IDENTIFIED**: 40+ handler signature errors traced to middleware calling with 2 args, handlers expecting 3
+* Added **Phase 1 Execution Rules** with detailed analysis and fix strategy
+* Added **Session Analysis & Findings** section documenting root cause discovery
+* Updated **API Handler Signature Rules** with correct patterns and middleware truth
+* All changes based on deep code analysis of `src/lib/api-wrapper.ts` and 40+ affected routes
