@@ -131,8 +131,8 @@ export const GET = withAdminAuth(async (request, context) => {
       data: {
         tenantId,
         action: 'admin:documents_stats',
-        userId: user.id,
-        resourceType: 'Document',
+        userId,
+        resource: 'Document',
       },
     }).catch(() => {})
 
