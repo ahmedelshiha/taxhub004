@@ -195,12 +195,12 @@ export const DELETE = withTenantContext(
         return respond.notFound('Service not found')
       }
 
-      // Soft delete by setting active to false and status to ARCHIVED
+      // Soft delete by setting active to false and status to INACTIVE
       const deleted = await prisma.service.update({
         where: { id: existing.id },
         data: {
           active: false,
-          status: 'ARCHIVED',
+          status: 'INACTIVE',
           deletedAt: new Date(),
         },
       })

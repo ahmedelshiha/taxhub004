@@ -41,7 +41,7 @@ export class ApprovalEngine {
       itemId,
       approverId,
       requesterId,
-      priority = 'normal',
+      priority = 'NORMAL',
       expiresAt,
       metadata,
     } = context
