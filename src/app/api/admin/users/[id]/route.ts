@@ -19,9 +19,12 @@ const UserUpdateSchema = z.object({
  * Get user details
  */
 export const GET = withAdminAuth(
-  async (request, { user, tenantId }, { params }) => {
+  async (request, { params }) => {
     try {
-      const { id } = params
+      const ctx = requireTenantContext()
+      const { tenantId } = ctx
+      const actualParams = await params
+      const { id } = actualParams
 
       const userDetail = await prisma.user.findFirst({
         where: {
@@ -64,9 +67,12 @@ export const GET = withAdminAuth(
  * Update user details
  */
 export const PUT = withAdminAuth(
-  async (request, { user, tenantId }, { params }) => {
+  async (request, { params }) => {
     try {
-      const { id } = params
+      const ctx = requireTenantContext()
+      const { tenantId } = ctx
+      const actualParams = await params
+      const { id } = actualParams
       const body = await request.json()
       const input = UserUpdateSchema.parse(body)
 
@@ -97,7 +103,7 @@ export const PUT = withAdminAuth(
 
       // Log audit event
       await logAudit({
-        userId: user.id,
+        userId: ctx.userId,
         action: 'USER_UPDATED',
         entity: 'User',
         entityId: id,
@@ -123,12 +129,15 @@ export const PUT = withAdminAuth(
  * Deactivate/delete user
  */
 export const DELETE = withAdminAuth(
-  async (request, { user, tenantId }, { params }) => {
+  async (request, { params }) => {
     try {
-      const { id } = params
+      const ctx = requireTenantContext()
+      const { tenantId } = ctx
+      const actualParams = await params
+      const { id } = actualParams
 
       // Prevent self-deletion
-      if (id === user.id) {
+      if (id === ctx.userId) {
         return respond.badRequest('Cannot deactivate your own user account')
       }
 
