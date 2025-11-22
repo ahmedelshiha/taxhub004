@@ -157,12 +157,14 @@ export const PUT = withTenantContext(
 
       if (Object.keys(changes).length > 0) {
         await logAudit({
-          tenantId,
-          userId: ctx.userId,
+          tenantId: tenantId as string,
+          userId: ctx.userId as string,
           action: 'TASK_UPDATED',
-          entity: 'Task',
-          entityId: taskId,
-          changes,
+          resource: 'Task',
+          metadata: {
+            taskId,
+            changes,
+          },
         })
       }
 
