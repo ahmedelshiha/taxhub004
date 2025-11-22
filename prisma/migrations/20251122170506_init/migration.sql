@@ -6,7 +6,11 @@ EXCEPTION
 END $$;
 
 -- CreateEnum
-CREATE TYPE "PriorityStatus" AS ENUM ('OPEN', 'IN_PROGRESS', 'BLOCKED', 'DONE');
+DO $$ BEGIN
+    CREATE TYPE "PriorityStatus" AS ENUM ('OPEN', 'IN_PROGRESS', 'BLOCKED', 'DONE');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- CreateEnum
 CREATE TYPE "TenantStatus" AS ENUM ('ACTIVE', 'SUSPENDED', 'DECOMMISSIONED');
