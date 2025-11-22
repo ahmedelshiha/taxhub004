@@ -107,7 +107,7 @@ export const GET = withTenantContext(
       ])
 
       // Filter fields based on role
-      const filteredBookings = bookings.map((b) => filterBookingFields(b, ctx.role, ctx.userId))
+      const filteredBookings = bookings.map((b) => filterBookingFields(b, ctx.role || '', ctx.userId || ''))
 
       return respond.ok(filteredBookings, {
         pagination: {
