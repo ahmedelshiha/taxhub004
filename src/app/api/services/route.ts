@@ -165,7 +165,7 @@ export const POST = withTenantContext(
       const validatedData = ServiceSchema.parse(body)
 
       // Create service
-      const service = await svc.createService(ctx.tenantId, validatedData as any)
+      const service = await svc.createService(ctx.tenantId as string, validatedData as any, ctx.userId as string)
 
       // Log audit
       await logAudit({
