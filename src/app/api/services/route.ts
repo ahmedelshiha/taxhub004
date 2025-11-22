@@ -74,8 +74,8 @@ const getCachedServices = withCache<any>(
     const result = await svc.getServicesList(tenantId, filters as any)
 
     // Filter fields based on role
-    if (Array.isArray(result?.data)) {
-      result.data = result.data.map((s: any) => filterServiceFields(s, userRole))
+    if (Array.isArray(result?.services)) {
+      result.services = result.services.map((s: any) => filterServiceFields(s, userRole))
     }
 
     return result
