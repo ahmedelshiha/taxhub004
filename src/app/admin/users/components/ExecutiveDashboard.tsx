@@ -158,7 +158,7 @@ function MetricCard({ metric }: { metric: MetricCardType }) {
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <span className="text-2xl">{metric.icon}</span>
-          {metric.trendDirection !== 'neutral' && (
+          {(metric.trendDirection === 'up' || metric.trendDirection === 'down') && (
             <TrendIcon
               className={`h-4 w-4 ${
                 metric.trendDirection === 'up' ? 'text-green-500' : 'text-red-500'
@@ -186,7 +186,6 @@ function MetricCard({ metric }: { metric: MetricCardType }) {
               {metric.change}
             </span>
           </div>
-          <p className="text-xs text-muted-foreground">{metric.comparison}</p>
         </div>
       </CardContent>
     </Card>
