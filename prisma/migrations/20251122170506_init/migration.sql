@@ -298,42 +298,46 @@ EXCEPTION
 END $$;
 
 -- CreateTable
-CREATE TABLE "users" (
-    "id" TEXT NOT NULL,
-    "tenantId" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
-    "name" TEXT,
-    "password" TEXT,
-    "image" TEXT,
-    "role" "UserRole" NOT NULL DEFAULT 'CLIENT',
-    "emailVerified" TIMESTAMP(3),
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "sessionVersion" INTEGER NOT NULL DEFAULT 0,
-    "employeeId" TEXT,
-    "department" TEXT,
-    "position" TEXT,
-    "skills" TEXT[],
-    "expertiseLevel" "ExpertiseLevel",
-    "hourlyRate" DECIMAL(65,30),
-    "availabilityStatus" "AvailabilityStatus" NOT NULL DEFAULT 'AVAILABLE',
-    "maxConcurrentProjects" INTEGER DEFAULT 3,
-    "hireDate" TIMESTAMP(3),
-    "managerId" TEXT,
-    "tier" TEXT,
-    "workingHours" JSONB,
-    "bookingBuffer" INTEGER,
-    "autoAssign" BOOLEAN,
-    "certifications" TEXT[],
-    "experienceYears" INTEGER,
-    "isActive" BOOLEAN DEFAULT true,
-    "preferences" JSONB,
-    "bio" TEXT,
-    "isAdmin" BOOLEAN DEFAULT false,
-    "lastLogin" TIMESTAMP(3),
+DO $$ BEGIN
+    CREATE TABLE "users" (
+        "id" TEXT NOT NULL,
+        "tenantId" TEXT NOT NULL,
+        "email" TEXT NOT NULL,
+        "name" TEXT,
+        "password" TEXT,
+        "image" TEXT,
+        "role" "UserRole" NOT NULL DEFAULT 'CLIENT',
+        "emailVerified" TIMESTAMP(3),
+        "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        "updatedAt" TIMESTAMP(3) NOT NULL,
+        "sessionVersion" INTEGER NOT NULL DEFAULT 0,
+        "employeeId" TEXT,
+        "department" TEXT,
+        "position" TEXT,
+        "skills" TEXT[],
+        "expertiseLevel" "ExpertiseLevel",
+        "hourlyRate" DECIMAL(65,30),
+        "availabilityStatus" "AvailabilityStatus" NOT NULL DEFAULT 'AVAILABLE',
+        "maxConcurrentProjects" INTEGER DEFAULT 3,
+        "hireDate" TIMESTAMP(3),
+        "managerId" TEXT,
+        "tier" TEXT,
+        "workingHours" JSONB,
+        "bookingBuffer" INTEGER,
+        "autoAssign" BOOLEAN,
+        "certifications" TEXT[],
+        "experienceYears" INTEGER,
+        "isActive" BOOLEAN DEFAULT true,
+        "preferences" JSONB,
+        "bio" TEXT,
+        "isAdmin" BOOLEAN DEFAULT false,
+        "lastLogin" TIMESTAMP(3),
 
-    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
-);
+        CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+    );
+EXCEPTION
+    WHEN duplicate_table THEN null;
+END $$;
 
 -- CreateTable
 CREATE TABLE "invitations" (
