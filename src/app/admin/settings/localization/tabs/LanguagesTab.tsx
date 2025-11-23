@@ -38,9 +38,10 @@ export const LanguagesTab: React.FC = () => {
         ttlMs: 5 * 60 * 1000, // 5 minute cache
       })
       setLanguages(d.data || [])
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('Failed to load languages:', e)
-      setError(e?.message || 'Failed to load languages')
+      const errorMessage = e instanceof Error ? e.message : 'Failed to load languages'
+      setError(errorMessage)
     } finally {
       setLoading(false)
     }
@@ -53,7 +54,7 @@ export const LanguagesTab: React.FC = () => {
     const method = editingLanguage ? 'PUT' : 'POST'
     const url = editingLanguage ? `/api/admin/languages/${encodeURIComponent(editingLanguage.code)}` : '/api/admin/languages'
 
-    const res = await mutate(url as string, method as any, language, { invalidate: ['api/admin/languages'] })
+    const res = await mutate(url as string, method as 'POST' | 'PUT' | 'PATCH' | 'DELETE', language, { invalidate: ['api/admin/languages'] })
     if (!res.ok) {
       setError(res.error || (editingLanguage ? 'Failed to update language' : 'Failed to create language'))
       toast.error(res.error || (editingLanguage ? 'Failed to update language' : 'Failed to create language'))
@@ -104,7 +105,7 @@ export const LanguagesTab: React.FC = () => {
       a.click()
       URL.revokeObjectURL(url)
       toast.success('Languages exported successfully')
-    } catch (e: any) {
+    } catch (e: unknown) {
       toast.error('Failed to export languages')
     }
   }
@@ -124,8 +125,9 @@ export const LanguagesTab: React.FC = () => {
         await loadLanguages()
         toast.success(`Imported ${data.length} languages`)
       }
-    } catch (e: any) {
-      toast.error(e?.message || 'Failed to import languages')
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Failed to import languages'
+      toast.error(errorMessage)
     } finally {
       if (e.target) e.target.value = ''
     }

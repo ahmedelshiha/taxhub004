@@ -9,13 +9,58 @@ import { PERMISSIONS } from '@/lib/permissions'
 import { TextField, Toggle, NumberField, SelectField } from '@/components/admin/settings/FormField'
 import FavoriteToggle from '@/components/admin/settings/FavoriteToggle'
 
+interface PasswordPolicy {
+  minLength?: number
+  requireUppercase?: boolean
+  requireLowercase?: boolean
+  requireNumber?: boolean
+  requireSymbol?: boolean
+  rotationDays?: number
+}
+
+interface SessionSecurity {
+  sessionTimeoutMinutes?: number
+  idleTimeoutMinutes?: number
+  maxConcurrentSessions?: number
+  enforceSingleSession?: boolean
+  refreshTokenRotation?: boolean
+}
+
+interface TwoFactor {
+  requiredForAdmins?: boolean
+  allowedMethods?: string[]
+  backupCodes?: number
+}
+
+interface Network {
+  ipAllowlist?: string[]
+  ipBlocklist?: string[]
+  blockTorExitNodes?: boolean
+  geoRestrictions?: string[]
+}
+
+interface DataProtection {
+  auditLogRetentionDays?: number
+  piiRedactionEnabled?: boolean
+  exportRequestsEnabled?: boolean
+  legalHoldEnabled?: boolean
+  documentRetentionDays?: number
+}
+
+interface Compliance {
+  gdprEnabled?: boolean
+  hipaaEnabled?: boolean
+  soc2Enabled?: boolean
+  requireDpa?: boolean
+}
+
 type SecuritySettings = {
-  passwordPolicy: any
-  sessionSecurity: any
-  twoFactor: any
-  network: any
-  dataProtection: any
-  compliance: any
+  passwordPolicy: PasswordPolicy
+  sessionSecurity: SessionSecurity
+  twoFactor: TwoFactor
+  network: Network
+  dataProtection: DataProtection
+  compliance: Compliance
 }
 
 const tabs = [
@@ -46,8 +91,8 @@ export default function SecurityComplianceSettingsPage() {
     if (r.ok) { const j = await r.json(); setSettings(j) }
   })() }, [])
 
-  function onChange(section: keyof SecuritySettings, key: string, value: any) {
-    setPending(p => ({ ...p, [section]: { ...(p as any)[section], [key]: value } }))
+  function onChange(section: keyof SecuritySettings, key: string, value: unknown) {
+    setPending(p => ({ ...p, [section]: { ...(p[section] as Record<string, unknown>), [key]: value } }))
   }
 
   async function onSave() {
@@ -126,7 +171,7 @@ export default function SecurityComplianceSettingsPage() {
   const [openModal, setOpenModal] = useState(false)
 
   const { data: session } = useSession()
-  const isSuper = (session?.user as any)?.role === 'SUPER_ADMIN'
+  const isSuper = (session?.user as { role?: string } | undefined)?.role === 'SUPER_ADMIN'
 
   return (
     <PermissionGate permission={PERMISSIONS.SECURITY_COMPLIANCE_SETTINGS_VIEW} fallback={<div className="p-6">You do not have access to Security & Compliance Settings.</div>}>

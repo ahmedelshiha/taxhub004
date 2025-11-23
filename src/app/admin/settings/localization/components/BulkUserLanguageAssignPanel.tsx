@@ -49,8 +49,8 @@ export const BulkUserLanguageAssignPanel: React.FC = () => {
       } else {
         toast.error('Failed to load users')
       }
-    } catch (e: any) {
-      const message = e?.name === 'AbortError' ? 'Request timed out' : e?.message || 'Failed to load users'
+    } catch (e: unknown) {
+      const message = e instanceof Error && e.name === 'AbortError' ? 'Request timed out' : e instanceof Error ? e.message : 'Failed to load users'
       toast.error(message)
     } finally {
       setLoadingUsers(false)

@@ -74,7 +74,7 @@ export const TeamMemberFormModal = React.forwardRef<HTMLDivElement, TeamMemberFo
 
     const formConfig: EntityFormConfig = {
       endpoint: (mode, id) =>
-        mode === 'create' ? '/api/admin/entities/team-members' : `/api/admin/entities/team-members/${id}`,
+        mode === 'create' ? '/api/admin/users' : `/api/admin/users/${id}`,
       method: (mode) => (mode === 'create' ? 'POST' : 'PATCH'),
       successMessage: (mode) =>
         mode === 'create' ? 'Team member added successfully' : 'Team member updated successfully',

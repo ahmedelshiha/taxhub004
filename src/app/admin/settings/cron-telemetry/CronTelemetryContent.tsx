@@ -67,11 +67,11 @@ export default function CronTelemetryContent() {
     }
   }
 
-  function updateSetting(section: keyof CronTelemetrySettings, field: string, value: any) {
+  function updateSetting(section: keyof CronTelemetrySettings, field: string, value: unknown) {
     setPending(prev => ({
       ...prev,
       [section]: {
-        ...(prev[section] as any) || {},
+        ...(prev[section] as Record<string, unknown>) || {},
         [field]: value
       }
     }))

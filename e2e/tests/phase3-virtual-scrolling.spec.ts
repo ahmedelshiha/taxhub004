@@ -18,18 +18,19 @@ async function devLoginAndSetCookie(page: any, request: any, baseURL: string | u
 test.describe('Phase 3: Virtual Scrolling Implementation', () => {
   test.beforeEach(async ({ page, request, baseURL }) => {
     await devLoginAndSetCookie(page, request, baseURL, 'admin@accountingfirm.com')
-    await page.goto('/admin/users')
+    // Navigate to Dashboard Operations tab which has the virtualized user directory
+    await page.goto('/admin/users?tab=dashboard')
 
     // Wait for main content to load
     await expect(page.getByRole('heading')).first().toBeVisible({ timeout: 5000 })
   })
 
   test.describe('VirtualizedDataTable Component', () => {
-    test('should render users table on dashboard', async ({ page }) => {
-      // Navigate to Entities tab if needed
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+    test('should render users table on dashboard operations', async ({ page }) => {
+      // Navigate to Operations sub-tab if in Overview
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -39,29 +40,29 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
     })
 
     test('should display virtualized rows with fixed height', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Operations sub-tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
       // Get the table container
       const tableContainer = page.locator('[role="grid"], table').first()
-      
+
       // Should have visible rows
       const rows = tableContainer.locator('tbody tr, [role="row"]')
       const rowCount = await rows.count()
-      
+
       // Should have at least some rows visible
       expect(rowCount).toBeGreaterThan(0)
     })
 
     test('should handle row selection without performance degradation', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Operations sub-tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -69,7 +70,7 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
       const firstCheckbox = page.locator('input[type="checkbox"]').first()
       if (await firstCheckbox.isVisible({ timeout: 1000 })) {
         await firstCheckbox.click()
-        
+
         // Verify it's selected (has checked attribute)
         const isChecked = await firstCheckbox.isChecked()
         expect(isChecked).toBe(true)
@@ -77,10 +78,10 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
     })
 
     test('should support sorting without re-rendering entire list', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Operations sub-tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -88,7 +89,7 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
       const sortableHeader = page.locator('th[role="columnheader"], [role="columnheader"]').first()
       if (await sortableHeader.isVisible({ timeout: 1000 })) {
         await sortableHeader.click()
-        
+
         // Verify table is still interactive
         const tableContainer = page.locator('[role="grid"], table').first()
         await expect(tableContainer).toBeVisible()
@@ -98,10 +99,10 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
 
   test.describe('Scroll Performance', () => {
     test('should maintain smooth scrolling (no jank)', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Dashboard Operations tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -121,10 +122,10 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
     })
 
     test('should not leak memory during scroll events', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Dashboard Operations tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -152,10 +153,10 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
     })
 
     test('should handle rapid consecutive scrolls', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Dashboard Operations tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -176,10 +177,10 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
 
   test.describe('useScrollPerformance Hook', () => {
     test('should track scroll metrics without performance impact', async ({ page }) => {
-      // Navigate to page with scroll tracking
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Dashboard Operations tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -201,9 +202,9 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
 
     test('should report FPS during smooth scroll', async ({ page }) => {
       // This is primarily a manual test, but we can verify the page doesn't crash
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -230,10 +231,10 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
 
   test.describe('Virtual Scrolling with Bulk Operations', () => {
     test('should allow selecting multiple rows without performance degradation', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Dashboard Operations tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -255,10 +256,10 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
     })
 
     test('should maintain selection state while scrolling', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Dashboard Operations tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -295,10 +296,10 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
 
   test.describe('Accessibility with Virtual Scrolling', () => {
     test('should maintain keyboard accessibility', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Dashboard Operations tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -317,10 +318,10 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
     })
 
     test('should work with screen readers', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Dashboard Operations tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -336,10 +337,10 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
 
   test.describe('Virtual Scrolling Edge Cases', () => {
     test('should handle empty table gracefully', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Dashboard Operations tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -355,10 +356,10 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
     })
 
     test('should handle resizing container without errors', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Dashboard Operations tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -379,10 +380,10 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
     })
 
     test('should handle dynamic data updates', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Dashboard Operations tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
       }
 
@@ -403,11 +404,11 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
 
   test.describe('Performance Comparison', () => {
     test('should load large list within reasonable time', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
+      // Navigate to Dashboard Operations tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
         const startTime = Date.now()
-        await entitiesTab.click()
+        await operationsTab.click()
         await page.waitForTimeout(2000)
         const loadTime = Date.now() - startTime
 
@@ -421,10 +422,10 @@ test.describe('Phase 3: Virtual Scrolling Implementation', () => {
     })
 
     test('should scroll large list smoothly', async ({ page }) => {
-      // Navigate to Entities tab
-      const entitiesTab = page.getByRole('tab', { name: /entities/i })
-      if (await entitiesTab.isVisible()) {
-        await entitiesTab.click()
+      // Navigate to Dashboard Operations tab
+      const operationsTab = page.getByRole('tab', { name: /operations/i })
+      if (await operationsTab.isVisible()) {
+        await operationsTab.click()
         await page.waitForTimeout(1000)
 
         // Perform timed scroll

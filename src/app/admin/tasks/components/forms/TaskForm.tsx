@@ -8,11 +8,21 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 
+interface Task {
+  id?: string
+  title: string
+  description?: string
+  priority?: string
+  dueDate?: string
+  dueAt?: string
+  assigneeId?: string
+}
+
 interface TaskFormProps {
-  task?: any
+  task?: Task
   mode: 'create' | 'edit'
   availableUsers?: { id: string; name: string }[]
-  onSave: (data: any) => Promise<void>
+  onSave: (data: TaskFormValues) => Promise<void>
   onCancel: () => void
 }
 
@@ -26,7 +36,7 @@ export default function TaskForm({ task, mode, availableUsers = [], onSave, onCa
   }
 
   const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm<TaskFormValues>({
-    resolver: zodResolver(TaskFormSchema) as any,
+    resolver: zodResolver(TaskFormSchema),
     defaultValues: defaultValues as TaskFormValues,
   })
 

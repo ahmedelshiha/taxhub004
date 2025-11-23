@@ -72,7 +72,7 @@ export const ClientFormModal = React.forwardRef<HTMLDivElement, ClientFormModalP
 
     const formConfig: EntityFormConfig = {
       endpoint: (mode, id) =>
-        mode === 'create' ? '/api/admin/entities/clients' : `/api/admin/entities/clients/${id}`,
+        mode === 'create' ? '/api/admin/users' : `/api/admin/users/${id}`,
       method: (mode) => (mode === 'create' ? 'POST' : 'PATCH'),
       successMessage: (mode) =>
         mode === 'create' ? 'Client created successfully' : 'Client updated successfully',

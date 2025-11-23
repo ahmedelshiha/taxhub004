@@ -32,11 +32,11 @@ export const OrganizationTab: React.FC = () => {
   async function loadOrgSettings() {
     try {
       setLoading(true)
-      const d = await cachedFetch<{ data: any }>('/api/admin/org-settings/localization', {
+      const d = await cachedFetch<{ data: Record<string, unknown> }>('/api/admin/org-settings/localization', {
         ttlMs: 5 * 60 * 1000, // 5 minute cache
       })
       setOrgSettings(prev => ({ ...prev, ...d.data }))
-    } catch (e) {
+    } catch (e: unknown) {
       console.error('Failed to load org settings:', e)
       setError('Failed to load organization settings')
     } finally {
@@ -73,9 +73,10 @@ export const OrganizationTab: React.FC = () => {
       invalidateLanguageCaches()
       toast.success('Organization settings saved')
       await loadOrgSettings()
-    } catch (e: any) {
-      setError(e?.message || 'Failed to save organization settings')
-      toast.error(e?.message || 'Failed to save organization settings')
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Failed to save organization settings'
+      setError(errorMessage)
+      toast.error(errorMessage)
     } finally {
       setSaving(false)
     }

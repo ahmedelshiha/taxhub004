@@ -57,11 +57,8 @@ const toast = {
     try {
       if (typeof toastLib?.success === 'function') {
         toastLib.success(message)
-      } else {
-        console.log('✅ Success:', message)
       }
     } catch {
-      console.log('✅ Success:', message)
     }
   },
   error: (message: string) => {

@@ -12,7 +12,7 @@ vi.mock('sonner', () => ({
 }))
 
 vi.mock('@/components/PermissionGate', () => ({
-  default: ({ children }: any) => <div>{children}</div>,
+  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
 
 describe('DiscoveryTab', () => {

@@ -318,7 +318,7 @@ export const workflowDesignerService = {
 
       // Simulate node execution
       let status: 'SUCCESS' | 'FAILED' | 'SKIPPED' = 'SUCCESS'
-      let output = testData
+      const output = testData
       let error: string | undefined
 
       // Simulate failures for demo

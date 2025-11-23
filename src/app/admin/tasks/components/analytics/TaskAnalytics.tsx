@@ -324,11 +324,11 @@ export default function TaskAnalytics() {
     const overdueCompliance = Number(stats?.compliance?.overdueCompliance || 0)
 
     // Calculate additional metrics
-    const inProgress = status.find((s: any) => 
+    const inProgress = status.find((s: { status: string; _count?: { _all?: number } }) =>
       String(s.status).toUpperCase() === 'IN_PROGRESS'
     )?._count?._all || 0
 
-    const criticalTasks = priority.find((p: any) => 
+    const criticalTasks = priority.find((p: { priority: string; _count?: { _all?: number } }) =>
       String(p.priority).toUpperCase() === 'CRITICAL'
     )?._count?._all || 0
 
@@ -351,9 +351,9 @@ export default function TaskAnalytics() {
 
   // Chart data preparation
   const statusChartData = useMemo(() => {
-    const labels = processedData.status.map((s: any) => titleCase(s.status))
-    const data = processedData.status.map((s: any) => s?._count?._all ?? 0)
-    
+    const labels = processedData.status.map((s: { status: string; _count?: { _all?: number } }) => titleCase(s.status))
+    const data = processedData.status.map((s: { status: string; _count?: { _all?: number } }) => s?._count?._all ?? 0)
+
     return {
       labels,
       datasets: [{
@@ -375,8 +375,8 @@ export default function TaskAnalytics() {
   }, [processedData.status])
 
   const priorityChartData = useMemo(() => {
-    const labels = processedData.priority.map((p: any) => titleCase(p.priority))
-    const data = processedData.priority.map((p: any) => p?._count?._all ?? 0)
+    const labels = processedData.priority.map((p: { priority: string; _count?: { _all?: number } }) => titleCase(p.priority))
+    const data = processedData.priority.map((p: { priority: string; _count?: { _all?: number } }) => p?._count?._all ?? 0)
     
     return {
       labels,

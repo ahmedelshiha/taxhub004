@@ -5,7 +5,7 @@ export interface FetchWithTimeoutOptions extends RequestInit {
   parseJson?: boolean
 }
 
-export interface FetchResult<T = any> {
+export interface FetchResult<T = unknown> {
   ok: boolean
   status: number
   data?: T
@@ -19,7 +19,7 @@ export interface FetchResult<T = any> {
  * - Safe for reuse across tabs and hooks
  */
 export function useFetchWithTimeout(defaultTimeoutMs = 15000) {
-  const fetchWithTimeout = useCallback(async <T = any>(
+  const fetchWithTimeout = useCallback(async <T = unknown>(
     url: string,
     options: FetchWithTimeoutOptions = {}
   ): Promise<FetchResult<T>> => {
@@ -32,7 +32,7 @@ export function useFetchWithTimeout(defaultTimeoutMs = 15000) {
       const response = await fetch(url, { ...rest, signal: controller.signal })
       const status = response.status
 
-      let payload: any = undefined
+      let payload: unknown = undefined
       if (parseJson) {
         try {
           payload = await response.json()
@@ -43,13 +43,13 @@ export function useFetchWithTimeout(defaultTimeoutMs = 15000) {
       }
 
       if (!response.ok) {
-        const message = (payload && (payload.error || payload.message)) || `HTTP ${status}`
+        const message = (payload && typeof payload === 'object' && ((payload as any).error || (payload as any).message)) ? String((payload as any).error || (payload as any).message) : `HTTP ${status}`
         return { ok: false, status, error: message }
       }
 
       return { ok: true, status, data: payload as T }
-    } catch (err: any) {
-      if (err?.name === 'AbortError') {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === 'AbortError') {
         return { ok: false, status: 0, error: 'Request timed out' }
       }
       const message = err instanceof Error ? err.message : 'Network error'

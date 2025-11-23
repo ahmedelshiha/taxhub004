@@ -1,1 +1,0 @@
--- Migration applied previously via manual script; no changes required.

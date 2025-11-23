@@ -35,8 +35,8 @@ function FinancialSettingsContent() {
     } finally { setLoading(false) }
   }
 
-  function onChange(section: string, field: string, value: any){
-    setPending((prev: any) => ({ ...prev, [section]: { ...(prev[section]||{}), [field]: value } }))
+  function onChange(section: string, field: string, value: unknown){
+    setPending((prev: Record<string, unknown>) => ({ ...prev, [section]: { ...(prev[section] as Record<string, unknown>)||{}, [field]: value } }))
   }
 
   async function onSave(){
@@ -173,11 +173,11 @@ export default function FinancialSettingsPage() {
   )
 }
 
-function Field({ label, value, onChange, type='text' }: { label: string; value: any; onChange: (v: any)=>void; type?: string }){
+function Field({ label, value, onChange, type='text' }: { label: string; value: unknown; onChange: (v: unknown)=>void; type?: string }){
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <input type={type} value={value} onChange={(e)=>onChange((type==='number'? Number(e.target.value): e.target.value))} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+      <input type={type} value={String(value || '')} onChange={(e)=>onChange((type==='number'? Number(e.target.value): e.target.value))} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
     </div>
   )
 }

@@ -2,7 +2,7 @@
  * Debounce function to delay execution of handlers
  * Useful for search inputs, auto-save operations
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
@@ -25,7 +25,7 @@ export function debounce<T extends (...args: any[]) => any>(
  * Throttle function to limit execution frequency
  * Useful for scroll events, window resize events
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: unknown[]) => unknown>(
   func: T,
   limit: number
 ): (...args: Parameters<T>) => void {
@@ -45,7 +45,7 @@ export function throttle<T extends (...args: any[]) => any>(
  * Prevents multiple simultaneous requests to the same endpoint
  */
 export class RequestDeduplicator {
-  private pendingRequests = new Map<string, Promise<any>>()
+  private pendingRequests = new Map<string, Promise<unknown>>()
 
   /**
    * Execute a fetch request with automatic deduplication
@@ -56,7 +56,7 @@ export class RequestDeduplicator {
     fetchFn: () => Promise<T>
   ): Promise<T> {
     if (this.pendingRequests.has(url)) {
-      return this.pendingRequests.get(url)!
+      return this.pendingRequests.get(url) as Promise<T>
     }
 
     const promise = fetchFn()

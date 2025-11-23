@@ -14,8 +14,9 @@ export function useLanguages() {
       const d = await r.json()
       if (!r.ok) throw new Error(d?.error || 'Failed to load languages')
       setLanguages(d.data || [])
-    } catch (e: any) {
-      setError(e?.message || 'Failed to load languages')
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Failed to load languages'
+      setError(errorMessage)
       throw e
     }
   }, [setLanguages, setError])
@@ -34,9 +35,10 @@ export function useLanguages() {
       if (!r.ok) throw new Error(d?.error || 'Failed to create language')
       toast.success('Language added successfully')
       await loadLanguages()
-    } catch (e: any) {
-      setError(e?.message || 'Failed to create language')
-      toast.error(e?.message || 'Failed to create language')
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Failed to create language'
+      setError(errorMessage)
+      toast.error(errorMessage)
       throw e
     } finally {
       setSaving(false)
@@ -56,9 +58,10 @@ export function useLanguages() {
       if (!r.ok) throw new Error(d?.error || 'Failed to update language')
       toast.success('Language updated')
       await loadLanguages()
-    } catch (e: any) {
-      setError(e?.message || 'Failed to update language')
-      toast.error(e?.message || 'Failed to update language')
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Failed to update language'
+      setError(errorMessage)
+      toast.error(errorMessage)
       throw e
     } finally {
       setSaving(false)
@@ -74,9 +77,10 @@ export function useLanguages() {
       if (!r.ok) throw new Error(d?.error || 'Failed to toggle language')
       toast.success('Language status updated')
       await loadLanguages()
-    } catch (e: any) {
-      setError(e?.message)
-      toast.error(e?.message)
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+      setError(errorMessage)
+      toast.error(errorMessage)
       throw e
     } finally {
       setSaving(false)
@@ -90,13 +94,15 @@ export function useLanguages() {
       const r = await fetch(`/api/admin/languages/${encodeURIComponent(code)}`, { method: 'DELETE' })
       if (!r.ok) {
         const d = await r.json().catch(() => ({}))
-        throw new Error((d as any)?.error || 'Failed to delete language')
+        const errorMsg = (d as { error?: string })?.error || 'Failed to delete language'
+        throw new Error(errorMsg)
       }
       toast.success('Language deleted')
       await loadLanguages()
-    } catch (e: any) {
-      setError(e?.message)
-      toast.error(e?.message)
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+      setError(errorMessage)
+      toast.error(errorMessage)
       throw e
     } finally {
       setSaving(false)
@@ -114,7 +120,7 @@ export function useLanguages() {
       a.click()
       URL.revokeObjectURL(url)
       toast.success('Languages exported successfully')
-    } catch (e: any) {
+    } catch (e: unknown) {
       toast.error('Failed to export languages')
       throw e
     }
@@ -132,8 +138,9 @@ export function useLanguages() {
       if (!r.ok) throw new Error(d?.error || 'Failed to import languages')
       toast.success(`Imported ${data.length} languages`)
       await loadLanguages()
-    } catch (e: any) {
-      toast.error(e?.message || 'Failed to import languages')
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Failed to import languages'
+      toast.error(errorMessage)
       throw e
     } finally {
       setSaving(false)

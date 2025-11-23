@@ -1,4 +1,7 @@
+'use client'
+
 import React from 'react'
+import Link from 'next/link'
 import { Target, Plus } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -42,12 +45,12 @@ export const TaskListView: React.FC<TaskListViewProps> = ({ tasks, loading = fal
           <Target className="h-12 w-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No tasks found</h3>
           <p className="text-gray-600 mb-4">Try adjusting your filters or create a new task to get started.</p>
-          <a href="/admin/tasks/new">
+          <Link href="/admin/tasks/new">
             <Button>
               <Plus className="h-4 w-4 mr-2" />
               Create New Task
             </Button>
-          </a>
+          </Link>
         </CardContent>
       </Card>
     )

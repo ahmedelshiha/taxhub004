@@ -1,26 +1,28 @@
 'use client'
 
 import { useEffect, useRef, useCallback } from 'react'
-import { useUserDataContext } from '../contexts/UserDataContext'
 
 export interface RealtimeOptions {
   debounceMs?: number
   autoRefresh?: boolean
+  refreshUsers?: () => Promise<void>
 }
 
 /**
  * Hook for subscribing to user management real-time events
  * Automatically refreshes user list when changes occur
- * 
+ *
  * Supports:
  * - User CRUD operations (create, update, delete)
  * - Role changes
  * - Permission updates
  * - Settings changes
+ *
+ * Note: refreshUsers callback must be provided as a parameter
+ * to avoid circular dependency with UserDataContextProvider
  */
 export function useUserManagementRealtime(options: RealtimeOptions = {}) {
-  const { debounceMs = 500, autoRefresh = true } = options
-  const { refreshUsers } = useUserDataContext()
+  const { debounceMs = 500, autoRefresh = true, refreshUsers } = options
   
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
   const eventSourceRef = useRef<EventSource | null>(null)
@@ -29,7 +31,7 @@ export function useUserManagementRealtime(options: RealtimeOptions = {}) {
   const handleRealtimeEvent = useCallback((event: MessageEvent) => {
     try {
       const message = JSON.parse(event.data)
-      
+
       // Filter for user management events
       const userManagementEventTypes = [
         'user-created',
@@ -40,7 +42,7 @@ export function useUserManagementRealtime(options: RealtimeOptions = {}) {
         'user-management-settings-updated'
       ]
 
-      if (userManagementEventTypes.includes(message.type) && autoRefresh) {
+      if (userManagementEventTypes.includes(message.type) && autoRefresh && refreshUsers) {
         // Debounce rapid successive refreshes
         if (debounceTimerRef.current) {
           clearTimeout(debounceTimerRef.current)

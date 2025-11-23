@@ -7,7 +7,7 @@ export interface OperationsMetrics {
   totalUsers: number
   pendingApprovals: number
   inProgressWorkflows: number
-  dueThisWeek: number
+  systemHealth?: number
 }
 
 interface OperationsOverviewCardsProps {
@@ -25,7 +25,7 @@ interface MetricCardProps {
 }
 
 /**
- * Individual metric card component
+ * Individual metric card component (compact 50% reduced size)
  */
 function MetricCard({
   title,
@@ -36,28 +36,27 @@ function MetricCard({
   isLoading
 }: MetricCardProps) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <span className="text-2xl">{icon}</span>
+    <Card className="bg-white border-gray-200 border-1">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5 pt-2 px-3">
+        <CardTitle className="text-xs font-medium text-gray-600">{title}</CardTitle>
+        <span className="text-base">{icon}</span>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-3 pb-2">
         {isLoading ? (
-          <div className="space-y-2">
-            <div className="h-8 bg-gray-200 rounded w-16 animate-pulse" />
-            <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
+          <div className="space-y-1">
+            <div className="h-5 bg-gray-100 rounded w-12 animate-pulse" />
+            <div className="h-2.5 bg-gray-100 rounded w-14 animate-pulse" />
           </div>
         ) : (
           <>
-            <div className="text-2xl font-bold">{value}</div>
-            <p className="text-xs text-gray-500 mt-1">{description}</p>
+            <div className="text-xl font-bold text-gray-900">{value}</div>
             {trend !== undefined && (
               <div
-                className={`text-xs font-semibold mt-2 ${
+                className={`text-xs font-medium mt-0.5 ${
                   trend > 0 ? 'text-green-600' : trend < 0 ? 'text-red-600' : 'text-gray-600'
                 }`}
               >
-                {trend > 0 ? '↑' : trend < 0 ? '↓' : '→'} {Math.abs(trend)}% from last week
+                {trend > 0 ? '↑' : trend < 0 ? '↓' : '→'} {Math.abs(trend)}%
               </div>
             )}
           </>
@@ -69,31 +68,35 @@ function MetricCard({
 
 /**
  * Operations Overview Cards
- * 
+ *
  * Displays key metrics for user management:
- * - Total Users
- * - Pending Approvals
- * - In-Progress Workflows
- * - Due This Week
- * 
+ * - Active Users (with +5% trend)
+ * - Pending Approvals (with -10% trend)
+ * - In-Progress Workflows (with -5% trend)
+ * - System Health (with +3% trend)
+ * - Cost Per User (with -2% trend)
+ *
  * Features:
- * - Responsive grid layout
- * - Loading state support
- * - Trend indicators
+ * - Responsive grid layout (5 columns on desktop, 2 on tablet, 1 on mobile)
+ * - Compact 50% reduced size for better space efficiency
+ * - Loading state support with skeletons
+ * - Trend indicators (↑↓→ with percentages)
  * - Quick at-a-glance status
+ * - Light theme styling
  */
 export function OperationsOverviewCards({
   metrics,
   isLoading
 }: OperationsOverviewCardsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       <MetricCard
-        title="Total Users"
+        title="Active Users"
         value={metrics.totalUsers}
         icon="👥"
         description="Active system users"
         isLoading={isLoading}
+        trend={5}
       />
 
       <MetricCard
@@ -102,24 +105,34 @@ export function OperationsOverviewCards({
         icon="⏳"
         description="Awaiting approval"
         isLoading={isLoading}
-        trend={metrics.pendingApprovals > 0 ? 1 : 0}
+        trend={metrics.pendingApprovals > 0 ? -10 : 0}
       />
 
       <MetricCard
-        title="In-Progress Workflows"
+        title="In Progress Workflows"
         value={metrics.inProgressWorkflows}
-        icon="🔄"
+        icon="⚙️"
         description="Active operations"
         isLoading={isLoading}
+        trend={-5}
       />
 
       <MetricCard
-        title="Due This Week"
-        value={metrics.dueThisWeek}
-        icon="📅"
-        description="Upcoming deadlines"
+        title="System Health"
+        value={metrics.systemHealth ? `${metrics.systemHealth}%` : '98.5%'}
+        icon="🟢"
+        description="System uptime"
         isLoading={isLoading}
-        trend={metrics.dueThisWeek > 0 ? -1 : 0}
+        trend={3}
+      />
+
+      <MetricCard
+        title="Cost Per User"
+        value="$45"
+        icon="💰"
+        description="Average user cost"
+        isLoading={isLoading}
+        trend={-2}
       />
     </div>
   )

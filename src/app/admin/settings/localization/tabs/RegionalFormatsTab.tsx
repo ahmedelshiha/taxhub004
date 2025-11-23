@@ -45,12 +45,22 @@ export const RegionalFormatsTab: React.FC = () => {
   async function loadFormats() {
     try {
       setLoading(true)
-      const d = await cachedFetch<{ data: any[] }>('/api/admin/regional-formats', {
+      interface FormatData {
+        language: string
+        dateFormat: string
+        timeFormat: string
+        currencyCode: string
+        currencySymbol: string
+        numberFormat: string
+        decimalSeparator: string
+        thousandsSeparator: string
+      }
+      const d = await cachedFetch<{ data: FormatData[] }>('/api/admin/regional-formats', {
         ttlMs: 5 * 60 * 1000, // 5 minute cache
       })
       if (d.data) {
         const formatMap: FormatState = {}
-        d.data.forEach((format: any) => {
+        d.data.forEach((format: FormatData) => {
           formatMap[format.language] = {
             dateFormat: format.dateFormat,
             timeFormat: format.timeFormat,
@@ -63,7 +73,7 @@ export const RegionalFormatsTab: React.FC = () => {
         })
         setFormats(formatMap)
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('Failed to load regional formats:', e)
     } finally {
       setLoading(false)
@@ -93,8 +103,9 @@ export const RegionalFormatsTab: React.FC = () => {
       toast.success(`Regional format saved for ${languageCode}`)
       invalidateLanguageCaches()
       await loadFormats()
-    } catch (e: any) {
-      toast.error(e?.message || 'Failed to save regional format')
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Failed to save regional format'
+      toast.error(errorMessage)
     } finally {
       setSaving(false)
     }
@@ -134,7 +145,7 @@ export const RegionalFormatsTab: React.FC = () => {
 
   const { validateFormat } = useFormValidation()
 
-  function validateFormats(format: any): Record<string, string> {
+  function validateFormats(format: { dateFormat?: string; timeFormat?: string; currencyCode?: string; currencySymbol?: string; numberFormat?: string } | null): Record<string, string> {
     return validateFormat(format)
   }
 

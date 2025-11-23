@@ -26,6 +26,12 @@ interface ServiceRow {
 
 const fetcher = async (url: string) => {
   const res = await apiFetch(url)
+  const defaultAnalytics = {
+    monthlyBookings: [],
+    revenueByService: [],
+    popularServices: [],
+    conversionRates: [],
+  }
   if (!res.ok) return { services: [], total: 0, analytics: null }
   try {
     const json = await res.json()
@@ -33,7 +39,7 @@ const fetcher = async (url: string) => {
       ? json
       : (Array.isArray(json?.services) ? json.services : (Array.isArray(json?.items) ? json.items : []))
     const total = typeof json?.total === 'number' ? json.total : services.length
-    const analytics = json?.analytics ?? null
+    const analytics = json?.analytics ? { ...defaultAnalytics, ...json.analytics } : null
     return { services, total, analytics }
   } catch {
     return { services: [], total: 0, analytics: null }

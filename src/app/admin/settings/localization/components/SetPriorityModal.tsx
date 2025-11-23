@@ -17,7 +17,17 @@ interface PriorityForm {
   notes: string
 }
 
-export const SetPriorityModal: React.FC<{ item?: any | null; onClose: () => void }> = ({ item = null, onClose }) => {
+interface PriorityItem {
+  key?: string
+  languageCode?: string
+  priority?: string
+  status?: string
+  dueDate?: string
+  assignedToUserId?: string
+  notes?: string
+}
+
+export const SetPriorityModal: React.FC<{ item?: PriorityItem | null; onClose: () => void }> = ({ item = null, onClose }) => {
   const isEdit = Boolean(item)
   const [form, setForm] = useState<PriorityForm>({ key: '', languageCode: '', priority: 'MEDIUM', status: 'OPEN', dueDate: '', assignedToUserId: '', notes: '' })
   const { createOrUpdate } = useTranslationPriority()

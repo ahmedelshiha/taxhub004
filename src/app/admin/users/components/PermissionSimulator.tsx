@@ -273,7 +273,7 @@ function simulateTest(testCase: TestCase): TestResult {
   const userActions = ['READ', 'COMMENT']
   const viewerActions = ['READ']
 
-  let allowedActions: string[] = []
+  const allowedActions: string[] = []
   for (const role of testCase.roles) {
     if (role === 'ADMIN') allowedActions.push(...adminActions)
     if (role === 'MANAGER') allowedActions.push(...managerActions)

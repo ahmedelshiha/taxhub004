@@ -62,7 +62,7 @@ export default function AdminPerfMetricsPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {(data.recent || []).slice().reverse().map((s: any, i: number) => (
+                    {(data.recent || []).slice().reverse().map((s: { ts: string; path: string; metrics?: { lcp?: string; cls?: string; inp?: string; ttfb?: string; fcp?: string; domInteractive?: string; load?: string } }, i: number) => (
                       <tr key={i} className="hover:bg-gray-50">
                         <td className="px-4 py-2">{new Date(s.ts).toLocaleTimeString()}</td>
                         <td className="px-4 py-2">{s.path}</td>

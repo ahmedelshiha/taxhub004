@@ -43,7 +43,7 @@ interface CalendarEvent {
   priority?: 'LOW' | 'MEDIUM' | 'HIGH'
   color: string
   // Extra fields for interactions
-  _raw?: any
+  _raw?: Record<string, unknown>
 }
 
 interface CalendarData {
@@ -220,9 +220,9 @@ export default function AdminCalendar() {
     }
   }
 
-  const toggleAvailability = async (slot: Required<CalendarData>['availability'][number]) => {
+  const toggleAvailability = async (slot: any) => {
     // Requires serviceId; calendar API includes serviceId for slots
-    if (!slot.serviceId) return
+    if (!slot?.id || !slot?.serviceId) return
     try {
       const body = {
         id: slot.id,
@@ -246,7 +246,7 @@ export default function AdminCalendar() {
 
   const onEventDragStart = (evt: CalendarEvent) => (e: React.DragEvent) => {
     if (evt.type !== 'booking') return
-    dragPayloadRef.current = { id: evt._raw.id, type: 'booking', when: evt.start.toISOString() }
+    dragPayloadRef.current = { id: evt.id, type: 'booking', when: evt.start.toISOString() }
     e.dataTransfer.setData('text/plain', JSON.stringify(dragPayloadRef.current))
     e.dataTransfer.effectAllowed = 'move'
   }
@@ -291,7 +291,7 @@ export default function AdminCalendar() {
     { key: 'status', label: 'Status', type: 'select', options: [ { label: 'All Status', value: 'all' }, { label: 'Confirmed', value: 'confirmed' }, { label: 'Pending', value: 'pending' }, { label: 'Completed', value: 'completed' }, { label: 'In Progress', value: 'in_progress' } ], defaultValue: 'all' },
   ]
 
-  const handleFilterChange = (key: string, value: any) => {
+  const handleFilterChange = (key: string, value: string | 'month' | 'week' | 'day') => {
     if (key === 'view') setView(value as 'month' | 'week' | 'day')
     if (key === 'types') setSelectedType(String(value))
     if (key === 'status') setSelectedStatus(String(value))
@@ -489,7 +489,7 @@ function MonthView({
   onDayDrop: (day: Date) => (e: React.DragEvent) => void
   onEmptyCellClick: (day: Date) => void
   onEventDragStart: (evt: CalendarEvent) => (e: React.DragEvent) => void
-  onAvailabilityToggle: (slot: any) => void
+  onAvailabilityToggle: (slot: { date: Date; time: string } | Record<string, unknown>) => void
 }) {
   const getDaysInMonth = () => {
     const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
@@ -561,7 +561,7 @@ function WeekView({
   onDayDrop: (day: Date) => (e: React.DragEvent) => void
   onEmptyCellClick: (day: Date) => void
   onEventDragStart: (evt: CalendarEvent) => (e: React.DragEvent) => void
-  onAvailabilityToggle: (slot: any) => void
+  onAvailabilityToggle: (slot: { date: Date; time: string } | Record<string, unknown>) => void
 }) {
   const getWeekDays = () => {
     const startOfWeek = new Date(currentDate)
@@ -616,7 +616,7 @@ function DayView({
   currentDate: Date
   onEmptyCellClick: (day: Date) => void
   onEventDragStart: (evt: CalendarEvent) => (e: React.DragEvent) => void
-  onAvailabilityToggle: (slot: any) => void
+  onAvailabilityToggle: (slot: { date: Date; time: string } | Record<string, unknown>) => void
 }) {
   const dayEvents = events
     .filter((event) => event.start.toDateString() === currentDate.toDateString())

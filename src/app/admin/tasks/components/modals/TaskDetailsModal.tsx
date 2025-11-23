@@ -9,10 +9,30 @@ import TaskReminders from '../widgets/TaskReminders'
 import TaskDependencies from '../widgets/TaskDependencies'
 import type { TaskPriority, TaskStatus, TaskCategory } from '@/lib/tasks/types'
 
+interface Task {
+  id?: string
+  title: string
+  description?: string
+  status?: TaskStatus
+  priority?: TaskPriority
+  category?: TaskCategory
+  assigneeId?: string
+  dueDate?: string
+  createdAt?: string
+  updatedAt?: string
+  watchers?: Array<{ id: string; name: string }>
+  reminders?: Array<{ id: string; type: string }>
+  dependencies?: string[]
+  tags?: string[]
+  estimatedHours?: number
+  clientId?: string
+  bookingId?: string
+}
+
 interface Props {
   open: boolean
   onClose: () => void
-  task?: any
+  task?: Task
 }
 
 const modalVariants = {
@@ -75,7 +95,7 @@ export default function TaskDetailsModal({ open, onClose, task }: Props) {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={`px-3 py-1 text-xs font-medium rounded-full border bg-white/20 text-white border-white/30`}>{category.charAt(0).toUpperCase() + category.slice(1)}</span>
-                  <span className={`px-3 py-1 text-xs font-medium rounded-full border bg-white/20 text-white border-white/30`}>{status.replace('_',' ')}</span>
+                  <span className={`px-3 py-1 text-xs font-medium rounded-full border bg-white/20 text-white border-white/30`}>{status.replace('_', ' ')}</span>
                   <button onClick={onClose} className="p-2 text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-colors"><X className="w-5 h-5" /></button>
                 </div>
               </div>
@@ -105,32 +125,32 @@ export default function TaskDetailsModal({ open, onClose, task }: Props) {
               {/* Meta grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 {metaItem(<Calendar className="w-4 h-4" />, 'Due Date', dueDate ? new Date(dueDate).toLocaleString() : '—')}
-                {metaItem(<User className="w-4 h-4" />, 'Assignee', task?.assignee?.name ?? task?.assigneeId ?? 'Unassigned')}
-                {metaItem(<AlertTriangle className="w-4 h-4" />, 'Status', status.replace('_',' '))}
-                {metaItem(<Clock className="w-4 h-4" />, 'Estimated Hours', (typeof task?.estimatedHours !== 'undefined' ? task.estimatedHours : '—'))}
+                {metaItem(<User className="w-4 h-4" />, 'Assignee', task?.assigneeId ? 'Assigned' : 'Unassigned')}
+                {metaItem(<AlertTriangle className="w-4 h-4" />, 'Status', status.replace('_', ' '))}
+                {metaItem(<Clock className="w-4 h-4" />, 'Estimated Hours', typeof task?.estimatedHours === 'number' ? `${task.estimatedHours}h` : '—')}
               </div>
 
               {/* Business context */}
               {(task?.clientId || task?.bookingId) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                  {metaItem(<Building className="w-4 h-4" />, 'Client', task?.client?.name || task?.clientId)}
-                  {metaItem(<Link2 className="w-4 h-4" />, 'Booking', task?.booking ? `${task.booking.service || 'Service'} — ${task.booking.scheduledDate || ''}` : task?.bookingId)}
+                  {metaItem(<Building className="w-4 h-4" />, 'Client', task?.clientId || 'Not set')}
+                  {metaItem(<Link2 className="w-4 h-4" />, 'Booking', task?.bookingId || 'Not set')}
                 </div>
               )}
 
-              {/* Widgets */}
+              {/* Widgets - placeholder for future enhancements */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
                 <div>
-                  <div className="font-semibold text-gray-900 mb-2 flex items-center gap-2"><Users className="w-4 h-4" /><span>Watchers</span></div>
-                  <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100"><TaskWatchers watchers={task?.watchers || []} /></div>
+                  <div className="font-semibold text-gray-900 mb-2 flex items-center gap-2"><Users className="w-4 h-4" /><span>Activity</span></div>
+                  <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100 text-sm text-gray-600">Task created at {task?.createdAt ? new Date(task.createdAt).toLocaleDateString() : 'unknown'}</div>
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 mb-2 flex items-center gap-2"><Clock className="w-4 h-4" /><span>Reminders</span></div>
-                  <div className="p-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-100"><TaskReminders reminders={task?.reminders || []} /></div>
+                  <div className="font-semibold text-gray-900 mb-2 flex items-center gap-2"><Clock className="w-4 h-4" /><span>Last Updated</span></div>
+                  <div className="p-3 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-100 text-sm text-gray-600">{task?.updatedAt ? new Date(task.updatedAt).toLocaleDateString() : 'unknown'}</div>
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900 mb-2 flex items-center gap-2"><Link2 className="w-4 h-4" /><span>Dependencies</span></div>
-                  <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100"><TaskDependencies dependencies={task?.dependencies || []} /></div>
+                  <div className="font-semibold text-gray-900 mb-2 flex items-center gap-2"><Link2 className="w-4 h-4" /><span>Priority</span></div>
+                  <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100 text-sm font-medium">{priority.toUpperCase()}</div>
                 </div>
               </div>
 
@@ -160,6 +180,6 @@ export default function TaskDetailsModal({ open, onClose, task }: Props) {
 
 function MessageBubble() {
   return (
-    <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-700"><path d="M18 10c0 3.866-3.582 7-8 7-.898 0-1.76-.12-2.563-.343-.392-.11-.81.024-1.06.343L4.5 18.5a1 1 0 01-1.707-.707v-1.379c0-.298-.133-.58-.36-.773C1.545 14.58 1 12.855 1 11c0-3.866 3.582-7 8-7s9 3.134 9 6z"/></svg>
+    <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-gray-700"><path d="M18 10c0 3.866-3.582 7-8 7-.898 0-1.76-.12-2.563-.343-.392-.11-.81.024-1.06.343L4.5 18.5a1 1 0 01-1.707-.707v-1.379c0-.298-.133-.58-.36-.773C1.545 14.58 1 12.855 1 11c0-3.866 3.582-7 8-7s9 3.134 9 6z" /></svg>
   )
 }

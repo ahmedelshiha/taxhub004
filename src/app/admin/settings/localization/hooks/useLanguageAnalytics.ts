@@ -12,8 +12,9 @@ export function useLanguageAnalytics() {
       const d = await r.json()
       if (!r.ok) throw new Error(d?.error || 'Failed to load analytics')
       setAnalyticsData(d.data)
-    } catch (e: any) {
-      setError(e?.message || 'Failed to load analytics')
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Failed to load analytics'
+      setError(errorMessage)
       throw e
     }
   }, [setAnalyticsData, setError])

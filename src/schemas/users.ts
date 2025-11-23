@@ -24,9 +24,9 @@ export const UserCreateSchema = z.object({
   location: z.string()
     .max(255, 'Location must be less than 255 characters')
     .optional(),
-  role: z.enum(['USER', 'TEAM_MEMBER', 'TEAM_LEAD', 'ADMIN'], {
+  role: z.enum(['CLIENT', 'TEAM_MEMBER', 'STAFF', 'TEAM_LEAD', 'ADMIN'], {
     message: 'Select a valid role'
-  }).default('USER'),
+  }).default('CLIENT'),
   isActive: z.boolean().default(true),
   requiresOnboarding: z.boolean().default(true),
   notes: z.string()
@@ -35,7 +35,7 @@ export const UserCreateSchema = z.object({
   temporaryPassword: z.string()
     .optional()
     .describe('Generated temporary password for new user'),
-  tags: z.array(z.string()).optional().default([]),
+  tags: z.array(z.string()).default([]),
 })
 
 /**
@@ -53,7 +53,7 @@ export const UserEditSchema = UserCreateSchema.omit({ email: true }).extend({
  */
 export const UserBulkAssignmentSchema = z.object({
   userIds: z.array(z.string().uuid()).min(1, 'Select at least one user'),
-  role: z.enum(['USER', 'TEAM_MEMBER', 'TEAM_LEAD', 'ADMIN']).optional(),
+  role: z.enum(['CLIENT', 'TEAM_MEMBER', 'STAFF', 'TEAM_LEAD', 'ADMIN']).optional(),
   permissions: z.array(z.string()).optional(),
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
 })

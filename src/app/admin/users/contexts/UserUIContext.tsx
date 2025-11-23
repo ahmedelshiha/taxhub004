@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react'
 import { UserItem } from './UserDataContext'
 
-type TabType = 'overview' | 'details' | 'activity' | 'settings'
+type TabType = 'overview' | 'details' | 'permissions' | 'activity' | 'settings'
 type StatusAction = 'activate' | 'deactivate' | 'suspend'
 
 /**

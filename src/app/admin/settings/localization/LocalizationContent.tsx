@@ -200,8 +200,9 @@ export default function LocalizationContent() {
       const d = await r.json()
       if (!r.ok) throw new Error(d?.error || 'Failed to load languages')
       setLanguages(d.data || [])
-    } catch (e: any) {
-      console.error('Failed to load languages:', e)
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e.message : String(e)
+      console.error('Failed to load languages:', error)
       throw e
     }
   }
@@ -297,9 +298,10 @@ export default function LocalizationContent() {
       toast.success('Organization settings saved')
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
-    } catch (e: any) {
-      setError(e?.message || 'Failed to save organization settings')
-      toast.error(e?.message || 'Failed to save settings')
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e.message : String(e)
+      setError(error || 'Failed to save organization settings')
+      toast.error(error || 'Failed to save settings')
     } finally {
       setSaving(false)
     }
@@ -332,9 +334,10 @@ export default function LocalizationContent() {
       setSaved(true)
       setRegionalFormatsEdited(false)
       setTimeout(() => setSaved(false), 3000)
-    } catch (e: any) {
-      setError(e?.message || 'Failed to save regional formats')
-      toast.error(e?.message || 'Failed to save formats')
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e.message : String(e)
+      setError(error || 'Failed to save regional formats')
+      toast.error(error || 'Failed to save formats')
     } finally {
       setSaving(false)
     }
@@ -355,9 +358,10 @@ export default function LocalizationContent() {
       setSaved(true)
       await loadCrowdinIntegration()
       setTimeout(() => setSaved(false), 3000)
-    } catch (e: any) {
-      setError(e?.message || 'Failed to save Crowdin integration')
-      toast.error(e?.message || 'Failed to save integration')
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e.message : String(e)
+      setError(error || 'Failed to save Crowdin integration')
+      toast.error(error || 'Failed to save integration')
     } finally {
       setSaving(false)
     }
@@ -379,8 +383,8 @@ export default function LocalizationContent() {
       if (!r.ok) throw new Error(d?.error || 'Connection test failed')
       setCrowdinTestResult({ success: true, message: 'Connection successful!' })
       toast.success('Crowdin connection test passed')
-    } catch (e: any) {
-      const message = e?.message || 'Connection test failed'
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'Connection test failed'
       setCrowdinTestResult({ success: false, message })
       toast.error(message)
     } finally {
@@ -413,9 +417,10 @@ export default function LocalizationContent() {
       setShowAddLanguageForm(false)
       await loadLanguages()
       toast.success('Language added successfully')
-    } catch (e: any) {
-      setError(e?.message || 'Failed to create language')
-      toast.error(e?.message || 'Failed to create language')
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e.message : String(e)
+      setError(error || 'Failed to create language')
+      toast.error(error || 'Failed to create language')
     } finally {
       setSaving(false)
     }
@@ -441,9 +446,10 @@ export default function LocalizationContent() {
       })
       await loadLanguages()
       toast.success('Language updated')
-    } catch (e: any) {
-      setError(e?.message || 'Failed to update language')
-      toast.error(e?.message || 'Failed to update language')
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e.message : String(e)
+      setError(error || 'Failed to update language')
+      toast.error(error || 'Failed to update language')
     } finally {
       setSaving(false)
     }
@@ -460,9 +466,10 @@ export default function LocalizationContent() {
       if (!r.ok) throw new Error(d?.error || 'Failed to toggle language')
       await loadLanguages()
       toast.success('Language status updated')
-    } catch (e: any) {
-      setError(e?.message)
-      toast.error(e?.message)
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e.message : String(e)
+      setError(error)
+      toast.error(error)
     } finally {
       setSaving(false)
     }
@@ -482,9 +489,10 @@ export default function LocalizationContent() {
       }
       await loadLanguages()
       toast.success('Language deleted')
-    } catch (e: any) {
-      setError(e?.message)
-      toast.error(e?.message)
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e.message : String(e)
+      setError(error)
+      toast.error(error)
     } finally {
       setSaving(false)
     }
@@ -1277,13 +1285,13 @@ export default function LocalizationContent() {
                           <div style={{ width: '300px', height: '300px' }}>
                             <Doughnut
                               data={{
-                                labels: analyticsData.distribution.map((d: any) => {
+                                labels: analyticsData.distribution.map((d: { language: string; count: number }) => {
                                   const lang = languages.find(l => l.code === d.language)
                                   return `${lang?.name || d.language} (${d.count})`
                                 }),
                                 datasets: [
                                   {
-                                    data: analyticsData.distribution.map((d: any) => d.count),
+                                    data: analyticsData.distribution.map((d: { language: string; count: number }) => d.count),
                                     backgroundColor: [
                                       '#3b82f6',
                                       '#ef4444',
@@ -1311,7 +1319,7 @@ export default function LocalizationContent() {
                         </div>
 
                         <div className="space-y-3">
-                          {analyticsData.distribution.map((item: any, idx: number) => (
+                          {analyticsData.distribution.map((item: { language: string; count: number; percentage?: number }, idx: number) => (
                             <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-gray-50">
                               <div className="flex items-center gap-3">
                                 <div

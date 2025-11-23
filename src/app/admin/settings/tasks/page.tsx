@@ -18,15 +18,15 @@ const tabs = [
 export default function TaskWorkflowSettingsPage(){
   const [active, setActive] = useState<string>('templates')
   const [settings, setSettings] = useState<any>(null)
-  const [pending, setPending] = useState<Record<string, any>>({})
+  const [pending, setPending] = useState<Record<string, unknown>>({})
   const [saving, setSaving] = useState(false)
   const [showImport, setShowImport] = useState(false)
-  const [importData, setImportData] = useState<any>(null)
+  const [importData, setImportData] = useState<unknown>(null)
 
   useEffect(()=>{ load() }, [])
   async function load(){ const r = await fetch('/api/admin/task-settings', { cache: 'no-store' }); if (r.ok) setSettings(await r.json()) }
 
-  function onChange(section: string, key: string, value: any){ setPending(p => ({ ...p, [section]: { ...(p as any)[section], [key]: value } })) }
+  function onChange(section: string, key: string, value: unknown){ setPending(p => ({ ...p, [section]: { ...(p[section] as Record<string, unknown> | undefined), [key]: value } })) }
 
   async function onSave(){ if (!Object.keys(pending).length) return; setSaving(true); try { const r = await fetch('/api/admin/task-settings', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(pending) }); if (r.ok) { setSettings(await r.json()); setPending({}) } } finally { setSaving(false) } }
 
@@ -34,16 +34,21 @@ export default function TaskWorkflowSettingsPage(){
     if (!settings) return <div className="text-gray-600">Loading...</div>
     switch(active){
       case 'templates': {
-        const templates = (pending.templates as any) ?? settings.templates ?? []
+        interface Template {
+          id?: string
+          name: string
+          description: string
+        }
+        const templates = (pending.templates as Template[]) ?? settings.templates ?? []
         return (
           <div className="space-y-4">
             <div className="flex items-center justify-between"><div className="text-sm text-gray-700">Task templates</div><button onClick={()=>{ const next=[...templates,{ id: undefined, name: 'New Template', description: '' }]; onChange('templates','templates',next) }} className="px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50">Add Template</button></div>
             <div className="space-y-3">
-              {templates.map((t:any,i:number)=> (
+              {templates.map((t: Template,i: number)=> (
                 <div key={i} className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end bg-white border border-gray-200 rounded-lg p-3">
                   <TextField label="Name" value={t.name||''} onChange={(v)=>{ const next=[...templates]; next[i]={...t,name:v}; onChange('templates','templates',next) }} />
                   <TextField label="Description" value={t.description||''} onChange={(v)=>{ const next=[...templates]; next[i]={...t,description:v}; onChange('templates','templates',next) }} />
-                  <div className="md:col-span-1 flex items-center"><button onClick={()=>{ const next=templates.filter((_:any,idx:number)=>idx!==i); onChange('templates','templates',next) }} className="px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50">Remove</button></div>
+                  <div className="md:col-span-1 flex items-center"><button onClick={()=>{ const next=templates.filter((_: Template,idx: number)=>idx!==i); onChange('templates','templates',next) }} className="px-3 py-2 border border-gray-300 rounded-md text-sm text-gray-700 bg-white hover:bg-gray-50">Remove</button></div>
                 </div>
               ))}
             </div>

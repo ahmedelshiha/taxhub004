@@ -12,8 +12,9 @@ export function useTranslationStatus() {
       const d = await r.json()
       if (!r.ok) throw new Error(d?.error || 'Failed to load translation status')
       setTranslationStatus(d.data)
-    } catch (e: any) {
-      setError(e?.message || 'Failed to load translation status')
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Failed to load translation status'
+      setError(errorMessage)
       throw e
     }
   }, [setTranslationStatus, setError])

@@ -50,7 +50,7 @@ export default function AdminEditServiceRequestPage() {
     if (!perms.has(PERMISSIONS.SERVICE_REQUESTS_UPDATE)) { setError('Not allowed'); return }
     setSaving(true); setError(null)
     try {
-      const payload: any = {
+      const payload: Record<string, unknown> = {
         title: form.title,
         description: form.description,
         priority: form.priority,

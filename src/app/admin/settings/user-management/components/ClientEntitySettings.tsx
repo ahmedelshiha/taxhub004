@@ -46,8 +46,8 @@ export function ClientEntitySettings({ isLoading = false, isSaving = false, onUp
     }
   }
 
-  const onChange = (section: keyof ClientManagementSettings, key: string, value: any) => {
-    setPending(p => ({ ...p, [section]: { ...(p as any)[section], [key]: value } }))
+  const onChange = (section: keyof ClientManagementSettings, key: string, value: unknown) => {
+    setPending(p => ({ ...p, [section]: { ...(p[section] as Record<string, unknown> | undefined), [key]: value } }))
   }
 
   const onSave = async () => {
@@ -153,7 +153,7 @@ export function ClientEntitySettings({ isLoading = false, isSaving = false, onUp
             </div>
             <div className="space-y-3">
               {fields.length === 0 && <div className="text-sm text-gray-500">No fields defined.</div>}
-              {fields.map((f: any, i: number) => (
+              {fields.map((f: { key: string; label: string; type: string; required?: boolean; visibleInPortal?: boolean }, i: number) => (
                 <div key={i} className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end bg-gray-50 border border-gray-200 rounded-lg p-3">
                   <TextField
                     label="Key"
@@ -214,7 +214,7 @@ export function ClientEntitySettings({ isLoading = false, isSaving = false, onUp
                     variant="ghost"
                     className="text-red-600 hover:bg-red-50"
                     onClick={() => {
-                      const next = fields.filter((_: any, idx: number) => idx !== i)
+                      const next = fields.filter((_: { key: string; label: string; type: string; required?: boolean; visibleInPortal?: boolean }, idx: number) => idx !== i)
                       onChange('profiles', 'fields', next)
                     }}
                   >

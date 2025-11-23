@@ -8,6 +8,21 @@ import { PERMISSIONS } from '@/lib/permissions'
 import { Badge } from '@/components/ui/badge'
 import { apiFetch } from '@/lib/api'
 
+function mapHealthStatus(status?: string): 'healthy' | 'degraded' | 'unavailable' | 'operational' {
+  if (!status) return 'degraded'
+  const mapped: Record<string, 'healthy' | 'degraded' | 'unavailable' | 'operational'> = {
+    'ok': 'healthy',
+    'healthy': 'healthy',
+    'UP': 'operational',
+    'operational': 'operational',
+    'DEGRADED': 'degraded',
+    'degraded': 'degraded',
+    'DOWN': 'unavailable',
+    'unavailable': 'unavailable',
+  }
+  return mapped[status] || 'degraded'
+}
+
 function StatusBadge({ status }: { status: 'healthy' | 'degraded' | 'unavailable' | 'operational' }) {
   const cls = status === 'healthy' || status === 'operational'
     ? 'bg-green-100 text-green-800 border-green-200'
@@ -79,10 +94,10 @@ export default function AdminIntegrationsPage() {
                     <div className="pt-2 border-t">
                       <div className="text-sm font-medium text-gray-900 mb-2">External APIs</div>
                       <div className="space-y-2">
-                        {health.externalApis.map((api: any, idx: number) => (
+                        {health.externalApis.map((api: { name: string; status?: string }, idx: number) => (
                           <div key={idx} className="flex items-center justify-between">
                             <div className="text-sm text-gray-700">{api.name}</div>
-                            <StatusBadge status={api.status || 'degraded'} />
+                            <StatusBadge status={mapHealthStatus(api.status)} />
                           </div>
                         ))}
                       </div>

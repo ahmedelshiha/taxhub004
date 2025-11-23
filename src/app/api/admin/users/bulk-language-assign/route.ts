@@ -80,8 +80,8 @@ export const POST = async (request: Request) => {
           action: 'user_language_assignment_bulk',
           actorId: ctx.userId,
           targetId: userId,
-          details: {
-            resourceType: 'user',
+          resource: 'User',
+          metadata: {
             targetLanguage,
             tenantId,
           },

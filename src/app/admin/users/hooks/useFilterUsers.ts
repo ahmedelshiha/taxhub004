@@ -32,7 +32,7 @@ export interface ServerFilterQuery {
 }
 
 const DEFAULT_CONFIG: FilterConfig = {
-  searchFields: ['name', 'email', 'company'],
+  searchFields: ['name', 'email', 'phone', 'company'],
   caseInsensitive: true,
   sortByDate: true,
   serverSide: false
