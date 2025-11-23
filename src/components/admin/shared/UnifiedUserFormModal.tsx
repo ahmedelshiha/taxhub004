@@ -68,10 +68,10 @@ export const UnifiedUserFormModal = React.forwardRef<HTMLDivElement, UnifiedUser
 
     const getValidationRules = (): FieldValidation => {
       const baseValidation: FieldValidation = {
-        name: { validate: (v) => !!v?.trim(), message: 'Name is required' },
+        name: { validate: (v) => !!(v as string)?.trim(), message: 'Name is required' },
         email: [
-          { validate: (v) => !!v?.trim(), message: 'Email is required' },
-          { validate: (v) => emailRegex.test(v), message: 'Invalid email format' },
+          { validate: (v) => !!(v as string)?.trim(), message: 'Email is required' },
+          { validate: (v) => emailRegex.test(v as string), message: 'Invalid email format' },
         ],
       }
 
@@ -82,8 +82,8 @@ export const UnifiedUserFormModal = React.forwardRef<HTMLDivElement, UnifiedUser
       if (selectedRole === 'TEAM_MEMBER' || selectedRole === 'TEAM_LEAD') {
         return {
           ...baseValidation,
-          department: { validate: (v) => !!v?.trim(), message: 'Department is required' },
-          title: { validate: (v) => !!v?.trim(), message: 'Job title is required' },
+          department: { validate: (v) => !!(v as string)?.trim(), message: 'Department is required' },
+          title: { validate: (v) => !!(v as string)?.trim(), message: 'Job title is required' },
         }
       }
 

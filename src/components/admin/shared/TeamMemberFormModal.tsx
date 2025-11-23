@@ -63,13 +63,13 @@ export const TeamMemberFormModal = React.forwardRef<HTMLDivElement, TeamMemberFo
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
     const validation: FieldValidation = {
-      name: { validate: (v) => !!v?.trim(), message: 'Team member name is required' },
+      name: { validate: (v) => !!(v as string)?.trim(), message: 'Team member name is required' },
       email: [
-        { validate: (v) => !!v?.trim(), message: 'Email is required' },
-        { validate: (v) => emailRegex.test(v), message: 'Invalid email format' },
+        { validate: (v) => !!(v as string)?.trim(), message: 'Email is required' },
+        { validate: (v) => emailRegex.test(v as string), message: 'Invalid email format' },
       ],
-      title: { validate: (v) => !!v?.trim(), message: 'Job title is required' },
-      department: { validate: (v) => !!v?.trim(), message: 'Department is required' },
+      title: { validate: (v) => !!(v as string)?.trim(), message: 'Job title is required' },
+      department: { validate: (v) => !!(v as string)?.trim(), message: 'Department is required' },
     }
 
     const formConfig: EntityFormConfig = {

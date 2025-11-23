@@ -63,10 +63,10 @@ export const ClientFormModal = React.forwardRef<HTMLDivElement, ClientFormModalP
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
     const validation: FieldValidation = {
-      name: { validate: (v) => !!v?.trim(), message: 'Client name is required' },
+      name: { validate: (v) => !!(v as string)?.trim(), message: 'Client name is required' },
       email: [
-        { validate: (v) => !!v?.trim(), message: 'Email is required' },
-        { validate: (v) => emailRegex.test(v), message: 'Invalid email format' },
+        { validate: (v) => !!(v as string)?.trim(), message: 'Email is required' },
+        { validate: (v) => emailRegex.test(v as string), message: 'Invalid email format' },
       ],
     }
 
