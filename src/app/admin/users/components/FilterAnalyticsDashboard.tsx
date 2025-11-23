@@ -276,7 +276,7 @@ function MostUsedFiltersChart({
  * Filter combinations table
  */
 interface FilterCombinationsTableProps {
-  combinations: any[]
+  combinations: Record<string, unknown>[]
   isLoading?: boolean
 }
 
@@ -322,7 +322,7 @@ function FilterCombinationsTable({
  * User engagement table
  */
 interface UserEngagementTableProps {
-  metrics: any[]
+  metrics: Record<string, unknown>[]
   isLoading?: boolean
 }
 
@@ -370,7 +370,7 @@ function UserEngagementTable({
  * Performance metrics panel
  */
 interface PerformanceMetricsPanelProps {
-  metrics: any
+  metrics: Record<string, unknown>
   isLoading?: boolean
 }
 
@@ -417,7 +417,7 @@ function PerformanceMetricsPanel({
  * Preset adoption panel
  */
 interface PresetAdoptionPanelProps {
-  metrics: any
+  metrics: Record<string, unknown>
   isLoading?: boolean
 }
 
@@ -468,7 +468,7 @@ function PresetAdoptionPanel({
         <div>
           <p className="text-sm font-medium mb-3">Top Presets</p>
           <div className="space-y-2">
-            {metrics.topPresets.map((preset: any, idx: number) => (
+            {metrics.topPresets.map((preset: Record<string, unknown>, idx: number) => (
               <div key={idx} className="flex justify-between items-center text-sm p-2 bg-gray-50 rounded">
                 <span>{preset.name}</span>
                 <span className="font-medium">{preset.usageCount} uses</span>
