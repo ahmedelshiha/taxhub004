@@ -25,4 +25,10 @@ export const FilterProvider = ({ children, tasks }: { children: React.ReactNode;
   )
 }
 
-export const useFilterContext = () => useContext(FilterContext)
+export const useFilterContext = (): FilterContextType => {
+  const context = useContext(FilterContext)
+  if (!context) {
+    throw new Error('useFilterContext must be used within FilterProvider')
+  }
+  return context
+}
